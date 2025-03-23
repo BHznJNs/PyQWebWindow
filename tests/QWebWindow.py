@@ -1,0 +1,1 @@
+from ..src.PyQWebWindow import QWebWindow
