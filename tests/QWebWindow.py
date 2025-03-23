@@ -1,1 +1,3 @@
-from ..src.PyQWebWindow import QWebWindow
+from PyQWebWindow import QWebWindow
+
+QWebWindow()

@@ -1,1 +1,1 @@
-from QWebWindow import QWebWindow
+from .QWebWindow import QWebWindow
