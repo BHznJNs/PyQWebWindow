@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Binding</title>
+</head>
+<body>
+    <h1>Python binding test</h1>
+    <script>
+        window.addEventListener("backendloaded", () => {
+            globalThis.backend.helloworld().then(res => alert(res))
+            globalThis.backend.hello_user("test").then(res => alert(res))
+        })
+    </script>
+</body>
+</html>
