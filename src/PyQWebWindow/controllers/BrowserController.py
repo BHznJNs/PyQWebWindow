@@ -8,7 +8,6 @@ from PyQWebWindow.utils import get_caller_file_abs_path
 
 class BrowserController:
     def __init__(self):
-        super().__init__()
         self._browser = QWebEngineView()
 
     @property
@@ -30,7 +29,7 @@ class BrowserController:
         return self._browser.page().windowCloseRequested
     """ browser event signals end """
 
-    def set_html(self, html: str):
+    def load_html(self, html: str):
         self._browser.setHtml(html)
 
     def load_file(self, path: str):

@@ -8,6 +8,7 @@ __pycache__/
 *.so
 *~
 venv/
+.vscode/
 
 # due to using nox and pytest
 .nox

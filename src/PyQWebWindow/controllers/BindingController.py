@@ -4,7 +4,6 @@ from PyQWebWindow.Backend import Backend
 
 class BindingController:
     def __init__(self):
-        super().__init__()
         self._backend = Backend()
         self._channel = QWebChannel()
 

@@ -16,9 +16,9 @@ def launch_test():
     window.start()
     return window
 
-def set_html_test():
+def load_html_test():
     window = QWebWindow()
-    window.set_html("<h1>Hello World!</h1>")
+    window.load_html("<h1>Hello World!</h1>")
     window.start()
     return window
 
@@ -39,6 +39,16 @@ def load_url_test():
     window.load_url("https://github.com")
     window.start()
     return window
+
+def set_title_test():
+    window = QWebWindow()
+    window.title = "test title"
+    window.start()
+    return window
+
+def set_icon_test():
+    window = QWebWindow()
+    window.icon = ""
 
 def python_binding_test():
     def helloworld(): return "Hello World!"
@@ -68,5 +78,5 @@ def eval_js_test():
     return window
 
 app = QAppManager(debugging=True)
-window = browser_events_test()
+window = set_title_test()
 app.exec()

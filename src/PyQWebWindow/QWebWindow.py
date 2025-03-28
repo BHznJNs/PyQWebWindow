@@ -3,8 +3,14 @@ from .EventListener import EventListener
 from .utils import INITIAL_SCRIPT
 
 class QWebWindow(BrowserController, BindingController, WindowController):
-    def __init__(self):
-        super().__init__()
+    def __init__(self,
+        title    : str  | None = None,
+        icon     : str  | None = None,
+        resizable: bool | None = None,
+    ):
+        BrowserController.__init__(self)
+        BindingController.__init__(self)
+        WindowController.__init__(self, title, icon, resizable)
         self._window_fill_with_browser_widget(self._browser)
         self._init_handler()
 

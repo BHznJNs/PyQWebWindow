@@ -1,12 +1,24 @@
-from PySide6.QtCore import QSize
+import os
+
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
+from PyQWebWindow.utils import get_caller_file_abs_path
+
 class WindowController:
-    def __init__(self):
-        super().__init__()
+    def __init__(self,
+        title    : str  | None,
+        icon     : str  | None,
+        resizable: bool | None,
+    ):
         self._window = QMainWindow(None)
         self._resizable = True
+        self._on_top = False
+        if title     is not None: self.title     = title
+        if icon      is not None: self.icon      = icon
+        if resizable is not None: self.resizable = resizable
 
     def _window_fill_with_browser_widget(self, browser_widget: QWebEngineView):
         self._window.setCentralWidget(browser_widget)
@@ -16,8 +28,17 @@ class WindowController:
         return self._window.windowTitle()
     @title.setter
     def title(self, title: str):
-        self._window.setFixedSize
         self._window.setWindowTitle(title)
+
+    @property
+    def icon(self): raise AttributeError("Cannot access 'icon' directly.")
+    @icon.setter
+    def icon(self, path: str):
+        caller_path = get_caller_file_abs_path()
+        caller_dir_path = os.path.dirname(caller_path)
+        target_path = os.path.join(caller_dir_path, os.path.normpath(path))
+        icon = QIcon(target_path)
+        self._window.setWindowIcon(icon)
 
     """ window size getter & setter begin """
     @property
@@ -36,14 +57,14 @@ class WindowController:
     @property
     def minimum_size(self) -> tuple[int, int]:
         size = self._window.minimumSize()
-        return (size.width(), self.height())
+        return (size.width(), size.height())
     @minimum_size.setter
     def minimum_size(self, width: int, height: int):
         self._window.setMinimumSize(QSize(width, height))
     @property
     def maximum_size(self) -> tuple[int, int]:
         size = self._window.maximumSize()
-        return (size.width(), self.height())
+        return (size.width(), size.height())
     @maximum_size.setter
     def maximum_size(self, width: int, height: int):
         self._window.setMaximumSize(QSize(width, height))
@@ -80,10 +101,18 @@ class WindowController:
     """ window operations begin """
     def show(self): self._window.show()
     def hide(self): self._window.hide()
-
     def focus(self):
         self._window.raise_()
         self._window.activateWindow()
+
+    @property
+    def on_top(self) -> bool:
+        return self._on_top
+    @on_top.setter
+    def on_top(self, new_val: bool):
+        self._on_top = new_val
+        self._window.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, new_val)
+        self._window.show()
 
     @property
     def hidden(self) -> bool:
