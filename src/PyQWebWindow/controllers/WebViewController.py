@@ -1,6 +1,7 @@
 import os
 
 from PySide6.QtCore import QUrl, SignalInstance
+from PySide6.QtWebEngineCore import QWebEngineSettings
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebChannel import QWebChannel
 
@@ -8,7 +9,10 @@ from PyQWebWindow.utils import get_caller_file_abs_path
 
 class WebViewController:
     def __init__(self):
-        self._webview = QWebEngineView()
+        view = self._webview = QWebEngineView()
+        view.settings().setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent, True)
+        view.settings().setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls, True)
+        view.settings().setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
 
     @property
     def _webview_has_bound_channel(self):
