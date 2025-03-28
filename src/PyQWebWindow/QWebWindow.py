@@ -16,10 +16,9 @@ class QWebWindow(BrowserController, BindingController, WindowController):
         self._browser_visible_changed.connect(event_listener.on_visible_changed)
         self._browser_window_close_requested.connect(event_listener.on_window_close_request)
 
-    def show(self):
-        if not self._browser_has_bound_channel:
-            self._binding_register_backend()
-            self._browser_bind_channel(self._channel)
+    def start(self):
+        self._binding_register_backend()
+        self._browser_bind_channel(self._channel)
         super().show()
 
     def focus(self):

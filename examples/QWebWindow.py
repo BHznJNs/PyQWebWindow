@@ -6,38 +6,38 @@ sys.path.insert(0,
         os.path.join(
             os.path.dirname(__file__), "../src")))
 
-from PyQWebWindow import QWebWindow, QAppManager, Slot
+from PyQWebWindow import QWebWindow, QAppManager
 
 def launch_test():
     """
     There should be a blank window appear after invocate this function.
     """
     window = QWebWindow()
-    window.show()
+    window.start()
     return window
 
 def set_html_test():
     window = QWebWindow()
     window.set_html("<h1>Hello World!</h1>")
-    window.show()
+    window.start()
     return window
 
 def load_page_test():
     window = QWebWindow()
     window.load_file("pages/helloworld.html")
-    window.show()
+    window.start()
     return window
 
 def load_page_with_assets_test():
     window = QWebWindow()
     window.load_file("pages/load_assets.html")
-    window.show()
+    window.start()
     return window
 
 def load_url_test():
     window = QWebWindow()
     window.load_url("https://github.com")
-    window.show()
+    window.start()
     return window
 
 def python_binding_test():
@@ -47,7 +47,7 @@ def python_binding_test():
     window = QWebWindow()
     window.load_file("pages/python_binding.html")
     window.register_bindings([helloworld, hello_user])
-    window.show()
+    window.start()
     return window
 
 def browser_events_test():
@@ -58,12 +58,12 @@ def browser_events_test():
     window.event_listener.add_event_listener("load_finished", load_finished_handler)
     window.event_listener.add_event_listener("visible_changed", visible_changed_handler)
     window.event_listener.add_event_listener("window_close_requested", window_close_requested_handler)
-    window.show()
+    window.start()
     return window
 
 def eval_js_test():
     window = QWebWindow()
-    window.show()
+    window.start()
     window.eval_js("document.write('<h1>Inserted text by eval</h1>')")
     return window
 
