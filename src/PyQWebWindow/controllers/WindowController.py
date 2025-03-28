@@ -24,6 +24,10 @@ class WindowController:
         self._window.setCentralWidget(browser_widget)
 
     @property
+    def window(self) -> QMainWindow:
+        return self._window
+
+    @property
     def title(self) -> str:
         return self._window.windowTitle()
     @title.setter

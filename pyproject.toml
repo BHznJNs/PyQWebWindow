@@ -1,10 +1,10 @@
 [project]
 name = "PyQWebWindow"
-version = "0.2.3"
+version = "0.2.4"
 authors = [
   { name="BHznJNs", email="441768875@qq.com" },
 ]
-description = "Another way to build Python Webview GUI applications."
+description = "Another way to build Python webview GUI applications."
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [

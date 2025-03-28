@@ -1,6 +1,6 @@
 # PyQWebWindow
 
-Another way to build Python Webview GUI applications.
+Another way to build Python webview GUI applications.
 
 ## Getting started
 
