@@ -35,11 +35,16 @@ class BrowserController:
     def load_file(self, path: str):
         """load file
         Args:
-            path (str): the relative path to the caller file
+            path (str): The path to HTML file, it can be:
+                - The absolute path
+                - The relative path to the caller file
         """
-        caller_path = get_caller_file_abs_path()
-        caller_dir_path = os.path.dirname(caller_path)
-        target_path = os.path.join(caller_dir_path, os.path.normpath(path))
+        if os.path.isabs(path):
+            target_path = path
+        else:
+            caller_path = get_caller_file_abs_path()
+            caller_dir_path = os.path.dirname(caller_path)
+            target_path = os.path.join(caller_dir_path, os.path.normpath(path))
         qurl = QUrl.fromLocalFile(target_path)
         self._browser.load(qurl)
 

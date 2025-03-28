@@ -34,9 +34,12 @@ class WindowController:
     def icon(self): raise AttributeError("Cannot access 'icon' directly.")
     @icon.setter
     def icon(self, path: str):
-        caller_path = get_caller_file_abs_path()
-        caller_dir_path = os.path.dirname(caller_path)
-        target_path = os.path.join(caller_dir_path, os.path.normpath(path))
+        if os.path.isabs(path):
+            target_path = path
+        else:
+            caller_path = get_caller_file_abs_path()
+            caller_dir_path = os.path.dirname(caller_path)
+            target_path = os.path.join(caller_dir_path, os.path.normpath(path))
         icon = QIcon(target_path)
         self._window.setWindowIcon(icon)
 
@@ -99,8 +102,9 @@ class WindowController:
 
 
     """ window operations begin """
-    def show(self): self._window.show()
-    def hide(self): self._window.hide()
+    def show (self): self._window.show()
+    def hide (self): self._window.hide()
+    def close(self): self._window.close()
     def focus(self):
         self._window.raise_()
         self._window.activateWindow()
