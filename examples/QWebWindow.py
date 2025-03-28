@@ -17,9 +17,6 @@ def launch_test():
     return window
 
 def set_html_test():
-    """
-    There should be a window appear with a headline: `Hello World!`
-    """
     window = QWebWindow()
     window.set_html("<h1>Hello World!</h1>")
     window.show()
@@ -53,6 +50,17 @@ def python_binding_test():
     window.show()
     return window
 
+def browser_events_test():
+    def load_finished_handler(ok: bool): print("load finished:", ok)
+    def visible_changed_handler(visible: bool): print("visible changed:", visible)
+    def window_close_requested_handler(): print("window close requested")
+    window = QWebWindow()
+    window.event_listener.add_event_listener("load_finished", load_finished_handler)
+    window.event_listener.add_event_listener("visible_changed", visible_changed_handler)
+    window.event_listener.add_event_listener("window_close_requested", window_close_requested_handler)
+    window.show()
+    return window
+
 def eval_js_test():
     window = QWebWindow()
     window.show()
@@ -60,5 +68,5 @@ def eval_js_test():
     return window
 
 app = QAppManager(debugging=True)
-window = python_binding_test()
+window = browser_events_test()
 app.exec()
