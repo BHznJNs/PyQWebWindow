@@ -127,7 +127,7 @@ class WindowController:
             window.setMaximumSize(QSize(MAX_SIZE, MAX_SIZE))
         else: window.setFixedSize(window.size())
     """ window size getter & setter end """
-    
+
     """ window position getter & setter begin """
     @property
     def x(self) -> int:
