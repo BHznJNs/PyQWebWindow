@@ -29,20 +29,24 @@ class _MainWindow(QMainWindow):
 
 class WindowController:
     def __init__(self,
-        title    : str  | None,
-        icon     : str  | None,
-        resizable: bool | None,
-        minimum_size: tuple[int, int] | None = None,
-        maximum_size: tuple[int, int] | None = None,
+        title: str  | None,
+        icon : str  | None,
+        pos  : tuple[int, int] | None,
+        size : tuple[int, int] | None,
+        minimum_size: tuple[int, int] | None,
+        maximum_size: tuple[int, int] | None,
+        resizable: bool,
+        on_top   : bool,
     ):
         self._window = _MainWindow()
-        self._resizable = True
-        self._on_top = False
-        if title     is not None: self.title     = title
-        if icon      is not None: self.icon      = icon
-        if resizable is not None: self.resizable = resizable
+        self._resizable = resizable
+        self._on_top = on_top
+        if title        is not None: self.title        = title
+        if icon         is not None: self.icon         = icon
+        if size         is not None: self.size         = size
         if minimum_size is not None: self.minimum_size = minimum_size
         if maximum_size is not None: self.maximum_size = maximum_size
+        if pos          is not None: self.pos = pos
 
     def _window_destroyed(self) -> SignalInstance:
         return self._window.destroyed
@@ -79,29 +83,36 @@ class WindowController:
     def width(self) -> int:
         return self._window.width()
     @width.setter
-    def width(self, new_val: int):
-        self._window.resize(new_val, self.height)
+    def width(self, new_width: int):
+        self._window.resize(new_width, self.height)
     @property
     def height(self) -> int:
         return self._window.height()
     @height.setter
-    def height(self, new_val: int):
-        self._window.resize(self.width, new_val)
+    def height(self, new_height: int):
+        self._window.resize(self.width, new_height)
 
+    @property
+    def size(self) -> tuple[int, int]:
+        size_ = self._window.size()
+        return (size_.width(), size_.height())
+    @size.setter
+    def size(self, new_size: tuple[int, int]):
+        self._window.resize(*new_size)
     @property
     def minimum_size(self) -> tuple[int, int]:
         size = self._window.minimumSize()
         return (size.width(), size.height())
     @minimum_size.setter
     def minimum_size(self, size: tuple[int, int]):
-        self._window.setMinimumSize(QSize(size[0], size[1]))
+        self._window.setMinimumSize(QSize(*size))
     @property
     def maximum_size(self) -> tuple[int, int]:
         size = self._window.maximumSize()
         return (size.width(), size.height())
     @maximum_size.setter
     def maximum_size(self, size: tuple[int, int]):
-        self._window.setMaximumSize(QSize(size[0], size[1]))
+        self._window.setMaximumSize(QSize(*size))
 
     @property
     def resizable(self) -> bool:
@@ -126,7 +137,15 @@ class WindowController:
     def y(self) -> int:
         """Relative from the top side of screen"""
         return self._window.pos().y()
-    
+
+    @property
+    def pos(self) -> tuple[int, int]:
+        pos_ = self._window.pos()
+        return (pos_.x(), pos_.y())
+    @pos.setter
+    def pos(self, new_pos: tuple[int, int]):
+        self._window.move(*new_pos)
+
     def move(self, x: int, y: int):
         self._window.move(x, y)
     """ window position getter & setter end """

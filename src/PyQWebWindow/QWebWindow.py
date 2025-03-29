@@ -5,25 +5,30 @@ from .utils import INITIAL_SCRIPT, LOADED_SCRIPT
 class QWebWindow(WebViewController, BindingController, WindowController):
     def __init__(self,
         # params below are window options
-        title    : str  | None = None,
-        icon     : str  | None = None,
-        resizable: bool | None = None,
-        minimum_size : tuple[int, int] | None = None,
-        maximum_size : tuple[int, int] | None = None,
+        title: str  | None = None,
+        icon : str  | None = None,
+        pos  : tuple[int, int] | None = None,
+        size : tuple[int, int] | None = None,
+        minimum_size: tuple[int, int] | None = None,
+        maximum_size: tuple[int, int] | None = None,
+        resizable: bool = True,
+        on_top   : bool = False,
         # params below are webview options
-        enable_clipboard    : bool | None = None,
-        enable_javascript   : bool | None = None,
-        enable_localstorage : bool | None = None,
-        enable_webgl        : bool | None = None,
-        force_darkmode      : bool | None = None,
-        show_scrollbars     : bool | None = None,
+        enable_clipboard    : bool = True,
+        enable_javascript   : bool = True,
+        enable_localstorage : bool = True,
+        enable_webgl        : bool = True,
+        force_darkmode      : bool = False,
+        show_scrollbars     : bool = True,
     ):
         BindingController.__init__(self)
         WebViewController.__init__(self,
             enable_clipboard, enable_javascript, enable_localstorage,
             enable_webgl, force_darkmode, show_scrollbars)
         WindowController.__init__(self,
-            title, icon, resizable, minimum_size, maximum_size)
+            title, icon, pos, size,
+            minimum_size, maximum_size,
+            resizable, on_top)
         self._window_fill_with_browser_widget(self._webview)
         self._init_event_listener()
 
