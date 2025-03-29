@@ -3,6 +3,7 @@ from PySide6.QtCore import QObject, Slot
 
 class EventListener(QObject):
     EventName = Literal[
+        "load_started",
         "load_finished",
         "visible_changed",
         "window_close_requested",
@@ -15,19 +16,24 @@ class EventListener(QObject):
     def __init__(self):
         super().__init__(None)
         self._event_dict: dict[EventListener.EventName, list[Callable]] = {
-            "load_finished": [],
+            "load_started"   : [],
+            "load_finished"  : [],
             "visible_changed": [],
             "window_close_requested": [],
-            "window_resized": [],
-            "window_shown": [],
-            "window_hidden": [],
-            "window_closed": [],
+            "window_resized" : [],
+            "window_shown"   : [],
+            "window_hidden"  : [],
+            "window_closed"  : [],
         }
 
     def add_event_listener(self, event_name: EventName, callback: Callable):
         self._event_dict[event_name].append(callback)
 
     """ browser event listeners begin """
+    @Slot()
+    def on_load_started(self):
+        for c in self._event_dict["load_started"]: c()
+
     @Slot(bool)
     def on_load_finished(self, ok: bool):
         for c in self._event_dict["load_finished"]: c(ok)

@@ -16,4 +16,5 @@ class QAppManager:
         QAppManager._app_singleton = QApplication(argv.to_list())
 
     def exec(self):
+        assert QAppManager._app_singleton is not None
         QAppManager._app_singleton.exec()

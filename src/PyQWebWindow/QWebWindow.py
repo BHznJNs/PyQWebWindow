@@ -1,6 +1,6 @@
 from .controllers import WebViewController, BindingController, WindowController
 from .EventListener import EventListener
-from .utils import INITIAL_SCRIPT
+from .utils import INITIAL_SCRIPT, LOADED_SCRIPT
 
 class QWebWindow(WebViewController, BindingController, WindowController):
     def __init__(self,
@@ -30,9 +30,12 @@ class QWebWindow(WebViewController, BindingController, WindowController):
     def _init_event_listener(self):
         event_listener = self.event_listener = EventListener()
         event_listener.add_event_listener("load_finished",
-                                          lambda _: self.eval_js(INITIAL_SCRIPT))
+            lambda _: self.eval_js(INITIAL_SCRIPT))
+        event_listener.add_event_listener("load_finished",
+            lambda _: self.eval_js(LOADED_SCRIPT))
         webpage = self.webpage
         window  = self.window
+        webpage.loadStarted.connect(event_listener.on_load_started)
         webpage.loadFinished.connect(event_listener.on_load_finished)
         webpage.visibleChanged.connect(event_listener.on_visible_changed)
         webpage.windowCloseRequested.connect(event_listener.on_window_close_requested)

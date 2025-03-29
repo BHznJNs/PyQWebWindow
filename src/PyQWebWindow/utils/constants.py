@@ -1,4 +1,8 @@
 INITIAL_SCRIPT = """\
+globalThis.backendloaded = false
+"""
+
+LOADED_SCRIPT = """\
 const script = document.createElement("script")
 script.src = "qrc:///qtwebchannel/qwebchannel.js"
 script.onload = () => {
@@ -11,7 +15,8 @@ script.onload = () => {
         }
 
         globalThis.dispatchEvent(new CustomEvent('backendloaded'))
+        globalThis.backendloaded = true
     })
 }
-document.head.appendChild(script)\
+document.head.appendChild(script)
 """

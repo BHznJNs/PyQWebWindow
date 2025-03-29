@@ -78,5 +78,5 @@ def eval_js_test():
     return window
 
 app = QAppManager(debugging=True)
-window = set_title_test()
+window = launch_test()
 app.exec()
