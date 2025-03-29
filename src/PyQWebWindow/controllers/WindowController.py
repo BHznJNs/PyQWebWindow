@@ -8,7 +8,7 @@ from PySide6.QtWebEngineWidgets import QWebEngineView
 from PyQWebWindow.utils import get_caller_file_abs_path
 
 class _MainWindow(QMainWindow):
-    resized = Signal()
+    resized = Signal(int, int)
     shown   = Signal()
     hidden  = Signal()
     closed  = Signal()
@@ -46,9 +46,6 @@ class WindowController:
 
     def _window_destroyed(self) -> SignalInstance:
         return self._window.destroyed
-
-    def _window_(self):
-        return self._window.event
 
     def _window_fill_with_browser_widget(self, browser_widget: QWebEngineView):
         self._window.setCentralWidget(browser_widget)
