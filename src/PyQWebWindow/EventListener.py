@@ -2,7 +2,15 @@ from typing import Callable, Literal
 from PySide6.QtCore import QObject, Slot
 
 class EventListener(QObject):
-    EventName = Literal["load_finished", "visible_changed", "window_close_requested"]
+    EventName = Literal[
+        "load_finished",
+        "visible_changed",
+        "window_close_requested",
+        "window_resized",
+        "window_shown",
+        "window_hidden",
+        "window_closed",
+    ]
 
     def __init__(self):
         super().__init__(None)
@@ -10,6 +18,10 @@ class EventListener(QObject):
             "load_finished": [],
             "visible_changed": [],
             "window_close_requested": [],
+            "window_resized": [],
+            "window_shown": [],
+            "window_hidden": [],
+            "window_closed": [],
         }
 
     def add_event_listener(self, event_name: EventName, callback: Callable):
@@ -18,17 +30,32 @@ class EventListener(QObject):
     """ browser event listeners begin """
     @Slot(bool)
     def on_load_finished(self, ok: bool):
-        callbacks = self._event_dict["load_finished"]
-        for c in callbacks: c(ok)
+        for c in self._event_dict["load_finished"]: c(ok)
 
     @Slot(bool)
     def on_visible_changed(self, visible: bool):
-        callbacks = self._event_dict["visible_changed"]
-        for c in callbacks: c(visible)
+        for c in self._event_dict["visible_changed"]: c(visible)
 
     @Slot()
-    def on_window_close_request(self):
+    def on_window_close_requested(self):
         """triggered when `window.close` is called in JavaScript"""
-        callbacks = self._event_dict["window_close_requested"]
-        for c in callbacks: c()
+        for c in self._event_dict["window_close_requested"]: c()
     """ browser event listeners end """
+
+    """ window event listeners start """
+    @Slot(int, int)
+    def on_window_resized(self, width: int, height: int):
+        for c in self._event_dict["window_resized"]: c(width, height)
+    
+    @Slot()
+    def on_window_shown(self):
+        for c in self._event_dict["window_shown"]: c()
+
+    @Slot()
+    def on_window_hidden(self):
+        for c in self._event_dict["window_hidden"]: c()
+
+    @Slot()
+    def on_window_closed(self):
+        for c in self._event_dict["window_closed"]: c()
+    """ window event listeners end """

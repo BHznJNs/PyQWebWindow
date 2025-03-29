@@ -1,18 +1,32 @@
 import os
 
 from PySide6.QtCore import QUrl, SignalInstance
-from PySide6.QtWebEngineCore import QWebEngineSettings
+from PySide6.QtWebEngineCore import QWebEngineSettings, QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebChannel import QWebChannel
 
 from PyQWebWindow.utils import get_caller_file_abs_path
 
 class WebViewController:
-    def __init__(self):
-        view = self._webview = QWebEngineView()
-        view.settings().setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent, True)
-        view.settings().setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls, True)
-        view.settings().setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
+    def __init__(self,
+        enable_clipboard    : bool | None,
+        enable_javascript   : bool | None,
+        enable_localstorage : bool | None,
+        enable_webgl        : bool | None,
+        force_darkmode      : bool | None,
+        show_scrollbars     : bool | None,
+    ):
+        self._webview = QWebEngineView()
+        settings = self._webview.settings()
+        settings.setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent    , True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls  , True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.JavascriptCanAccessClipboard, enable_clipboard    or True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.JavascriptEnabled           , enable_javascript   or True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.LocalStorageEnabled         , enable_localstorage or True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.WebGLEnabled                , enable_webgl        or True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.ForceDarkMode               , force_darkmode      or False)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.ShowScrollBars              , show_scrollbars     or True)
 
     @property
     def _webview_has_bound_channel(self):
@@ -25,17 +39,9 @@ class WebViewController:
     def webview(self) -> QWebEngineView:
         return self._webview
 
-    """ browser event signals begin """
     @property
-    def _webview_load_finished(self) -> SignalInstance:
-        return self._webview.page().loadFinished
-    @property
-    def _webview_visible_changed(self) -> SignalInstance:
-        return self._webview.page().visibleChanged
-    @property
-    def _webview_window_close_requested(self) -> SignalInstance:
-        return self._webview.page().windowCloseRequested
-    """ browser event signals end """
+    def webpage(self) -> QWebEnginePage:
+        return self._webview.page()
 
     def load_html(self, html: str):
         self._webview.setHtml(html)

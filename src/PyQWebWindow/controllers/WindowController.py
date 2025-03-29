@@ -1,30 +1,60 @@
 import os
 
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import Qt, QSize, Signal, SignalInstance
+from PySide6.QtGui import QIcon, QCloseEvent, QShowEvent, QHideEvent, QResizeEvent
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
 from PyQWebWindow.utils import get_caller_file_abs_path
+
+class _MainWindow(QMainWindow):
+    resized = Signal()
+    shown   = Signal()
+    hidden  = Signal()
+    closed  = Signal()
+
+    def resizeEvent(self, event: QResizeEvent):
+        resized_size = event.size()
+        self.resized.emit(resized_size.width(), resized_size.height())
+        event.accept()
+    def showEvent(self, event: QShowEvent):
+        self.shown.emit()
+        event.accept()
+    def hideEvent(self, event: QHideEvent):
+        self.hidden.emit()
+        event.accept()
+    def closeEvent(self, event: QCloseEvent):
+        self.closed.emit()
+        event.accept()
 
 class WindowController:
     def __init__(self,
         title    : str  | None,
         icon     : str  | None,
         resizable: bool | None,
+        minimum_size: tuple[int, int] | None = None,
+        maximum_size: tuple[int, int] | None = None,
     ):
-        self._window = QMainWindow(None)
+        self._window = _MainWindow()
         self._resizable = True
         self._on_top = False
         if title     is not None: self.title     = title
         if icon      is not None: self.icon      = icon
         if resizable is not None: self.resizable = resizable
+        if minimum_size is not None: self.minimum_size = minimum_size
+        if maximum_size is not None: self.maximum_size = maximum_size
+
+    def _window_destroyed(self) -> SignalInstance:
+        return self._window.destroyed
+
+    def _window_(self):
+        return self._window.event
 
     def _window_fill_with_browser_widget(self, browser_widget: QWebEngineView):
         self._window.setCentralWidget(browser_widget)
 
     @property
-    def window(self) -> QMainWindow:
+    def window(self) -> _MainWindow:
         return self._window
 
     @property
@@ -66,15 +96,15 @@ class WindowController:
         size = self._window.minimumSize()
         return (size.width(), size.height())
     @minimum_size.setter
-    def minimum_size(self, width: int, height: int):
-        self._window.setMinimumSize(QSize(width, height))
+    def minimum_size(self, size: tuple[int, int]):
+        self._window.setMinimumSize(QSize(size[0], size[1]))
     @property
     def maximum_size(self) -> tuple[int, int]:
         size = self._window.maximumSize()
         return (size.width(), size.height())
     @maximum_size.setter
-    def maximum_size(self, width: int, height: int):
-        self._window.setMaximumSize(QSize(width, height))
+    def maximum_size(self, size: tuple[int, int]):
+        self._window.setMaximumSize(QSize(size[0], size[1]))
 
     @property
     def resizable(self) -> bool:
