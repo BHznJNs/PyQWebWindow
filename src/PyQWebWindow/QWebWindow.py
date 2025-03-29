@@ -29,7 +29,7 @@ class QWebWindow(WebViewController, BindingController, WindowController):
 
     def _init_event_listener(self):
         event_listener = self.event_listener = EventListener()
-        event_listener.add_event_listener("load_finished",
+        event_listener.add_event_listener("load_started",
             lambda _: self.eval_js(INITIAL_SCRIPT))
         event_listener.add_event_listener("load_finished",
             lambda _: self.eval_js(LOADED_SCRIPT))
