@@ -1,4 +1,4 @@
-from PyQWebWindow.Backend import Backend
+from PyQWebWindow.controllers.Backend import Backend
 
 def test_backend_init():
     backend = Backend()

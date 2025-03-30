@@ -1,6 +1,6 @@
 import os
 
-from PySide6.QtCore import QUrl, SignalInstance
+from PySide6.QtCore import QUrl
 from PySide6.QtWebEngineCore import QWebEngineSettings, QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebChannel import QWebChannel
@@ -65,5 +65,6 @@ class WebViewController:
     def load_url(self, url: str):
         self._webview.load(QUrl(url))
 
-    def eval_js(self, script: str):
-        self._webview.page().runJavaScript(script)
+    def eval_js(self, *scripts: str):
+        for script in scripts:
+            self._webview.page().runJavaScript(script)
