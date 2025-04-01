@@ -6,7 +6,7 @@ sys.path.insert(0,
         os.path.join(
             os.path.dirname(__file__), "../src")))
 
-from PyQWebWindow import QWebWindow, QAppManager
+from PyQWebWindow import QWebWindow, QAppManager, QWorker
 
 def launch_test():
     """
@@ -60,6 +60,18 @@ def python_binding_test():
     window.start()
     return window
 
+def python_worker_test():
+    def task(user_name: str) -> str:
+        from time import sleep
+        sleep(3)
+        return f"Hello {user_name}!"
+
+    window = QWebWindow()
+    window.load_file("pages/python_worker.html")
+    window.register_worker(QWorker(task))
+    window.start()
+    return window
+
 def browser_events_test():
     def load_finished_handler(ok: bool): print("load finished:", ok)
     def visible_changed_handler(visible: bool): print("visible changed:", visible)
@@ -78,5 +90,5 @@ def eval_js_test():
     return window
 
 app = QAppManager(debugging=True)
-window = launch_test()
+window = python_worker_test()
 app.exec()
