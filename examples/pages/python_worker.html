@@ -8,8 +8,9 @@
 <body>
     <h1>Python worker test</h1>
     <script>
-        window.addEventListener("backendloaded", () => {
-            backend.task(["user"], (result) => console.log(result))
+        window.addEventListener("backendloaded", async () => {
+            const result = await backend.task("user")
+            alert(result)
         })
     </script>
 </body>

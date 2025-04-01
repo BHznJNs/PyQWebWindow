@@ -10,20 +10,15 @@ for (const methodName of globalThis.backend._methods) {
 """
 
 INITIALIZE_WORKERS = """\
-const callbackMap = new Map()
-const callbackIdFactory = () => crypto.randomUUID()
-globalThis.backend._worker_finished.connect((callbackName, result) => {
-    if (!callbackMap.has(callbackName)) return
-    const callback = callbackMap.get(callbackName)
-    callbackMap.delete(callbackName)
-    callback(result)
-})
 for (const workerName of globalThis.backend._workers) {
-    globalThis.backend[workerName] = (args, callback) => {
-        const callbackName = callbackIdFactory()
-        callbackMap.set(callbackName, callback)
-        globalThis.backend._start_worker(workerName, callbackName, args)
-    }
+    globalThis.backend[workerName] = (...args) => new Promise((resolve, _) => {
+        const callback = (result) => {
+            globalThis.backend._worker_finished.disconnect(callback)
+            resolve(result)
+        }
+        globalThis.backend._worker_finished.connect(callback)
+        globalThis.backend._start_worker(workerName, args)
+    })
 }
 """
 

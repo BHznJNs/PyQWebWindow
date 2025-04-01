@@ -4,7 +4,7 @@ from PySide6.QtCore import QObject, Signal, Slot, Property
 from PyQWebWindow import QWorker, Serializable, SerializableCallable
 
 class Backend(QObject):
-    _worker_finished = Signal(str, "QVariant") # type: ignore
+    _worker_finished = Signal("QVariant") # type: ignore
 
     def __init__(self):
         super().__init__(None)
@@ -22,17 +22,16 @@ class Backend(QObject):
     def _workers(self):
         return list(self._worker_dict.keys())
 
-    @Slot(str, str, list)
+    @Slot(str, list)
     def _start_worker(self,
         worker_name: str,
-        callback_name: str,
         args: list[Serializable],
     ):
         worker = self._worker_dict[worker_name]
         worker.set_args(args)
-        worker.start()
         worker.finished.connect(lambda result:
-            self._worker_finished.emit(callback_name, result))
+            self._worker_finished.emit(result))
+        worker.start()
 
     @Property(list)
     def _methods(self):
