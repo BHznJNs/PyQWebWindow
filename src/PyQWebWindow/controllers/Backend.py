@@ -1,36 +1,47 @@
-from typing import Callable
 from PySide6.QtCore import QObject, Signal, Slot, Property
-
-from PyQWebWindow import QWorker, Serializable, SerializableCallable
+from PyQWebWindow.QWorker import QWorker
+from PyQWebWindow.controllers.BindingController import Serializable, SerializableCallable
 
 class Backend(QObject):
-    _worker_finished = Signal("QVariant") # type: ignore
+    _task_finished = Signal(str, "QVariant") # type: ignore
 
     def __init__(self):
         super().__init__(None)
-        self._worker_dict: dict[str, QWorker] = {}
+        # store workers in set to prevent the workers to be cleared by GC
+        self._working_workers: set[QWorker] = set()
+
+        self._task_dict: dict[str, SerializableCallable] = {}
         self._method_dict: dict[str, SerializableCallable] = {}
 
-    def add_worker(self, worker: QWorker):
-        self._worker_dict[worker.name] = worker
+    def add_task(self, task: SerializableCallable):
+        task_name = task.__name__
+        self._task_dict[task_name] = task
 
-    def add_method(self, method: Callable):
+    def add_method(self, method: SerializableCallable):
         method_name = method.__name__
         self._method_dict[method_name] = method
 
     @Property(list)
-    def _workers(self):
-        return list(self._worker_dict.keys())
+    def _tasks(self):
+        return list(self._task_dict.keys())
 
-    @Slot(str, list)
-    def _start_worker(self,
-        worker_name: str,
+    @Slot(str, str, list)
+    def _start_task(self,
+        task_name: str,
+        callback_name: str,
         args: list[Serializable],
     ):
-        worker = self._worker_dict[worker_name]
+        def after_worker_finished(result: Serializable):
+            nonlocal worker
+            self._task_finished.emit(callback_name, result)
+            worker.finished.disconnect(after_worker_finished)
+            self._working_workers.remove(worker)
+
+        task = self._task_dict[task_name]
+        worker = QWorker(task)
+        self._working_workers.add(worker)
         worker.set_args(args)
-        worker.finished.connect(lambda result:
-            self._worker_finished.emit(result))
+        worker.finished.connect(after_worker_finished)
         worker.start()
 
     @Property(list)

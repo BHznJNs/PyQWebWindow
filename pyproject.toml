@@ -1,6 +1,6 @@
 [project]
 name = "PyQWebWindow"
-version = "0.3.1"
+version = "0.3.2"
 authors = [
   { name="BHznJNs", email="441768875@qq.com" },
 ]

@@ -68,7 +68,7 @@ def python_worker_test():
 
     window = QWebWindow()
     window.load_file("pages/python_worker.html")
-    window.register_worker(QWorker(task))
+    window.register_task(task)
     window.start()
     return window
 

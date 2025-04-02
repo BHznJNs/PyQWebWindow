@@ -1,17 +1,13 @@
 from PySide6.QtCore import QThread, Signal
+from PyQWebWindow.controllers.BindingController import Serializable, SerializableCallable
 
 class QWorker(QThread):
-    from PyQWebWindow.controllers.BindingController import Serializable, SerializableCallable
-
     finished = Signal(type(Serializable))
 
     def __init__(self, task: SerializableCallable):
         super().__init__(None)
         self._task = task
-
-    @property
-    def name(self):
-        return self._task.__name__
+        self._args = None
     
     def set_args(self, args: list[Serializable]):
         self._args = args

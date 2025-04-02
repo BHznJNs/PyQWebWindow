@@ -9,8 +9,15 @@
     <h1>Python worker test</h1>
     <script>
         window.addEventListener("backendloaded", async () => {
-            const result = await backend.task("user")
-            alert(result)
+            const results = await Promise.all([
+                backend.task("user1"),
+                backend.task("user2"),
+                backend.task("user3"),
+            ])
+            for (const result of results) {
+                console.log(result)
+                alert(result)
+            }
         })
     </script>
 </body>

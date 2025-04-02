@@ -23,7 +23,7 @@ class BindingController:
     def register_bindings(self, methods: list[SerializableCallable]):
         for method in methods: self.register_binding(method)
 
-    def register_worker(self, worker: QWorker):
-        self._backend.add_worker(worker)
-    def register_workers(self, workers: list[QWorker]):
-        for worker in workers: self._backend.add_worker(worker)
+    def register_task(self, task: SerializableCallable):
+        self._backend.add_task(task)
+    def register_tasks(self, tasks: list[SerializableCallable]):
+        for task in tasks: self._backend.add_task(task)
