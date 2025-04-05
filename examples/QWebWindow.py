@@ -72,6 +72,12 @@ def python_worker_test():
     window.start()
     return window
 
+def open_link_test():
+    window = QWebWindow()
+    window.load_file("pages/open_link.html")
+    window.start()
+    return window
+
 def browser_events_test():
     def load_finished_handler(ok: bool): print("load finished:", ok)
     def visible_changed_handler(visible: bool): print("visible changed:", visible)
@@ -90,5 +96,5 @@ def eval_js_test():
     return window
 
 app = QAppManager(debugging=True)
-window = python_worker_test()
+window = open_link_test()
 app.exec()

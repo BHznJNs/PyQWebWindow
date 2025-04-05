@@ -1,11 +1,37 @@
 import os
 
 from PySide6.QtCore import QUrl
+from PySide6.QtGui import QDesktopServices
 from PySide6.QtWebEngineCore import QWebEngineSettings, QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebChannel import QWebChannel
 
 from PyQWebWindow.utils import get_caller_file_abs_path
+
+class CustomWebEnginePage(QWebEnginePage):
+    class BrowserBridgePage(QWebEnginePage):
+        """
+        This class is used to open links from the WebEngine in user default browser.
+        Especially for `<a href="http://example.com" target="_blank"></a>`
+        """
+        def __init__(self, parent=None):
+            super().__init__(parent)
+            self.urlChanged.connect(self._on_url_changed)
+
+        def _on_url_changed(self, url: QUrl):
+            # open url with user default browser
+            QDesktopServices.openUrl(url)
+            self.deleteLater()
+
+    def createWindow(self, type_: QWebEnginePage.WebWindowType): # type: ignore
+        match type_:
+            case QWebEnginePage.WebWindowType.WebBrowserWindow |\
+                 QWebEnginePage.WebWindowType.WebBrowserTab    |\
+                 QWebEnginePage.WebWindowType.WebBrowserBackgroundTab:
+                return CustomWebEnginePage.BrowserBridgePage(self)
+            case QWebEnginePage.WebWindowType.WebDialog:
+                return super().createWindow(type_)
+            case _: raise ValueError("Unexpected WebWindowType: ", type_)
 
 class WebViewController:
     def __init__(self,
@@ -17,6 +43,8 @@ class WebViewController:
         show_scrollbars     : bool,
     ):
         self._webview = QWebEngineView()
+        self._webview.setPage(CustomWebEnginePage(self._webview))
+
         settings = self._webview.settings()
         settings.setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent    , True)
         settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls  , True)
