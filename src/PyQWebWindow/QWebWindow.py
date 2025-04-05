@@ -13,6 +13,7 @@ class QWebWindow(WebViewController, BindingController, WindowController):
         maximum_size: tuple[int, int] | None = None,
         resizable: bool = True,
         on_top   : bool = False,
+        hide_when_close: bool = False,
         # params below are webview options
         enable_clipboard    : bool = True,
         enable_javascript   : bool = True,
@@ -28,7 +29,7 @@ class QWebWindow(WebViewController, BindingController, WindowController):
         WindowController.__init__(self,
             title, icon, pos, size,
             minimum_size, maximum_size,
-            resizable, on_top)
+            resizable, on_top, hide_when_close)
         self._window_fill_with_browser_widget(self._webview)
         self._init_event_listener()
 

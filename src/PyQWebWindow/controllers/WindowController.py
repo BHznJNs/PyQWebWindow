@@ -2,7 +2,7 @@ import os
 
 from PySide6.QtCore import Qt, QSize, Signal, SignalInstance
 from PySide6.QtGui import QIcon, QCloseEvent, QShowEvent, QHideEvent, QResizeEvent
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QMainWindow, QWidget
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
 from PyQWebWindow.utils import get_caller_file_abs_path
@@ -12,6 +12,10 @@ class _MainWindow(QMainWindow):
     shown   = Signal()
     hidden  = Signal()
     closed  = Signal()
+
+    def __init__(self, hide_when_close: bool) -> None:
+        super().__init__(None)
+        self._hide_when_close = hide_when_close
 
     def resizeEvent(self, event: QResizeEvent):
         resized_size = event.size()
@@ -24,6 +28,10 @@ class _MainWindow(QMainWindow):
         self.hidden.emit()
         event.accept()
     def closeEvent(self, event: QCloseEvent):
+        if self._hide_when_close:
+            self.hide()
+            event.ignore()
+            return
         self.closed.emit()
         event.accept()
 
@@ -37,19 +45,17 @@ class WindowController:
         maximum_size: tuple[int, int] | None,
         resizable: bool,
         on_top   : bool,
+        hide_when_close: bool,
     ):
-        self._window = _MainWindow()
-        self._resizable = resizable
-        self._on_top = on_top
+        self._window = _MainWindow(hide_when_close)
+        self.resizable = resizable
+        self.on_top = on_top
         if title        is not None: self.title        = title
         if icon         is not None: self.icon         = icon
         if size         is not None: self.size         = size
         if minimum_size is not None: self.minimum_size = minimum_size
         if maximum_size is not None: self.maximum_size = maximum_size
         if pos          is not None: self.pos = pos
-
-    def _window_destroyed(self) -> SignalInstance:
-        return self._window.destroyed
 
     def _window_fill_with_browser_widget(self, browser_widget: QWebEngineView):
         self._window.setCentralWidget(browser_widget)
