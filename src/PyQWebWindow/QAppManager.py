@@ -31,3 +31,7 @@ class QAppManager:
     def exec(self):
         assert QAppManager._app_singleton is not None
         QAppManager._app_singleton.exec()
+
+    def quit(self):
+        assert QAppManager._app_singleton is not None
+        QAppManager._app_singleton.quit()
