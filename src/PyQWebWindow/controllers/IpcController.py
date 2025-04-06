@@ -1,16 +1,11 @@
 import pickle
 import uuid
-from typing import Callable, TypeAlias, Union
 from PySide6.QtNetwork import QLocalServer, QLocalSocket
-
-IpcSerializable: TypeAlias = Union[
-    int, float, bool, str, None,
-    list["IpcSerializable"], tuple["IpcSerializable", ...], dict["IpcSerializable", "IpcSerializable"]]
-IpcSerializableCallable: TypeAlias = Callable[..., IpcSerializable]
+from ..utils.Serializable import Serializable, SerializableCallable
 
 class IpcPayload:
     @staticmethod
-    def dumps(obj: IpcSerializable):
+    def dumps(obj: Serializable):
         return pickle.dumps(obj)
     @staticmethod
     def loads(data: bytes):
@@ -18,7 +13,7 @@ class IpcPayload:
 
 class IpcServer:
     def __init__(self, server_name: str = str(uuid.uuid4())):
-        self._event_dict: dict[str, list[Callable]] = {}
+        self._event_dict: dict[str, list[SerializableCallable]] = {}
         self._clients: set[QLocalSocket] = set()
         self.server_name = server_name
         IpcServer.ensure_server_name(server_name)
@@ -50,17 +45,17 @@ class IpcServer:
     def _handle_event(self, client: QLocalSocket):
         while client.bytesAvailable():
             data = client.readAll().data()
-            decoded: list[IpcSerializable] = IpcPayload.loads(data)
+            decoded: list[Serializable] = IpcPayload.loads(data)
             event_name = str(decoded[0])
             args = decoded[1:]
             events = self._event_dict[event_name]
             for event in events: event(*args)
 
-    def on(self, event_name: str, callback: Callable):
+    def on(self, event_name: str, callback: SerializableCallable):
         self._event_dict.setdefault(event_name, [])
         self._event_dict[event_name].append(callback)
 
-    def emit(self, event_name: str, *args: IpcSerializable):
+    def emit(self, event_name: str, *args: Serializable):
         encoded = IpcPayload.dumps([event_name, *args])
         for client in self._clients:
             client.write(encoded)
@@ -73,7 +68,7 @@ class IpcClient:
     connect_timeout_ms = 300
 
     def __init__(self, server_name: str):
-        self._event_dict: dict[str, list[Callable]] = {}
+        self._event_dict: dict[str, list[SerializableCallable]] = {}
         socket = self._socket = QLocalSocket()
         socket.connectToServer(server_name)
         if not socket.waitForConnected(IpcClient.connect_timeout_ms):
@@ -83,17 +78,17 @@ class IpcClient:
     def _handle_event(self):
         while self._socket.bytesAvailable():
             data = self._socket.readAll().data()
-            decoded: list[IpcSerializable] = IpcPayload.loads(data)
+            decoded: list[Serializable] = IpcPayload.loads(data)
             event_name = str(decoded[0])
             args = decoded[1:]
             events = self._event_dict[event_name]
             for event in events: event(*args)
 
-    def on(self, event_name: str, callback: Callable):
+    def on(self, event_name: str, callback: SerializableCallable):
         self._event_dict.setdefault(event_name, [])
         self._event_dict[event_name].append(callback)
 
-    def emit(self, event_name: str, *args: IpcSerializable):
+    def emit(self, event_name: str, *args: Serializable):
         encoded = IpcPayload.dumps([event_name, *args])
         self._socket.write(encoded)
 

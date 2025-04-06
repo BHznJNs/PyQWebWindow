@@ -1,6 +1,6 @@
 from PySide6.QtCore import QObject, Signal, Slot, Property
-from PyQWebWindow.QWorker import QWorker
-from PyQWebWindow.controllers.BindingController import Serializable, SerializableCallable
+from ..QWorker import QWorker
+from ..utils.Serializable import Serializable, SerializableCallable
 
 class Backend(QObject):
     _task_finished = Signal(str, "QVariant") # type: ignore

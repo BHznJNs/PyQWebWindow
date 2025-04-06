@@ -28,5 +28,5 @@ def hide_when_close_test():
     return window
 
 app = QAppManager(debugging=True)
-window = hide_when_close_test()
+window = launch_test()
 app.exec()

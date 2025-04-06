@@ -1,14 +1,8 @@
-from typing import Callable, Union, TypeAlias
-from PySide6.QtCore import QObject
 from PySide6.QtWebChannel import QWebChannel
-
-Serializable: TypeAlias = Union[
-    int, float, bool, str, None,
-    list["Serializable"], tuple["Serializable", ...], dict["Serializable", "Serializable"], QObject]
-SerializableCallable: TypeAlias = Callable[..., Serializable]
 
 class BindingController:
     from ..QWorker import QWorker
+    from ..utils.Serializable import SerializableCallable
 
     def __init__(self):
         from .Backend import Backend

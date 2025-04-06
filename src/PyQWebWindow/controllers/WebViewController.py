@@ -6,7 +6,7 @@ from PySide6.QtWebEngineCore import QWebEngineSettings, QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebChannel import QWebChannel
 
-from PyQWebWindow.utils import get_caller_file_abs_path
+from ..utils import get_caller_file_abs_path
 
 class CustomWebEnginePage(QWebEnginePage):
     class BrowserBridgePage(QWebEnginePage):

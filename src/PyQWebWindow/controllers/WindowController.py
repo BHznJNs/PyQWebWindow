@@ -1,11 +1,11 @@
 import os
 
-from PySide6.QtCore import Qt, QSize, Signal, SignalInstance
+from PySide6.QtCore import Qt, QSize, Signal
 from PySide6.QtGui import QIcon, QCloseEvent, QShowEvent, QHideEvent, QResizeEvent
-from PySide6.QtWidgets import QMainWindow, QWidget
+from PySide6.QtWidgets import QMainWindow
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
-from PyQWebWindow.utils import get_caller_file_abs_path
+from ..utils import get_caller_file_abs_path
 
 class _MainWindow(QMainWindow):
     resized = Signal(int, int)

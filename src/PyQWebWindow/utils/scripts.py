@@ -9,25 +9,6 @@ for (const methodName of globalThis.backend._methods) {
 }
 """
 
-# let taskId = 0;
-# const pending = {};
-
-# function startTask() {
-#     const id = taskId++;
-#     return new Promise((resolve) => {
-#         pending[id] = resolve;
-#         backend.startTask(id); // 通知后端执行任务并传递 id
-#     });
-# }
-
-# // 统一信号处理
-# _task_finished.connect((id, result) => {
-#     if (pending[id]) {
-#         pending[id](result);
-#         delete pending[id];
-#     }
-# });
-
 INITIALIZE_TASKS = """\
 const callbackNameFactory = () => crypto.randomUUID()
 const callbackMap = new Map()

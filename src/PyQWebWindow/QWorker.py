@@ -1,5 +1,5 @@
 from PySide6.QtCore import QThread, Signal
-from PyQWebWindow.controllers.BindingController import Serializable, SerializableCallable
+from .utils.Serializable import Serializable, SerializableCallable
 
 class QWorker(QThread):
     finished = Signal(type(Serializable))
