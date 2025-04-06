@@ -8,7 +8,7 @@ class QWorker(QThread):
         super().__init__(None)
         self._task = task
         self._args = None
-    
+
     def set_args(self, args: list[Serializable]):
         self._args = args
 
