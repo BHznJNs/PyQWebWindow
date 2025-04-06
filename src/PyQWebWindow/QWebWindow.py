@@ -50,10 +50,10 @@ class QWebWindow(WebViewController, BindingController, WindowController):
         window.hidden.connect(event_listener.on_window_hidden)
         window.closed.connect(event_listener.on_window_closed)
 
-    def start(self):
+    def start(self, show_when_ready: bool = True):
         self._binding_register_backend()
         self._webview_bind_channel(self._channel)
-        super().show()
+        if show_when_ready: super().show()
 
     def focus(self):
         super().focus()
