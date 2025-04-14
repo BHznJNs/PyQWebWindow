@@ -9,6 +9,7 @@ __pycache__/
 *~
 venv/
 .vscode/
+*.log
 
 # due to using nox and pytest
 .nox

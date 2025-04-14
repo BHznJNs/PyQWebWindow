@@ -84,6 +84,13 @@ class WindowController:
         icon = QIcon(target_path)
         self._window.setWindowIcon(icon)
 
+    @property
+    def hide_when_close(self) -> bool:
+        return self._window._hide_when_close
+    @hide_when_close.setter
+    def hide_when_close(self, value: bool):
+        self._window._hide_when_close = value
+
     """ window size getter & setter begin """
     @property
     def width(self) -> int:
@@ -172,7 +179,6 @@ class WindowController:
     def on_top(self, new_val: bool):
         self._on_top = new_val
         self._window.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, new_val)
-        self._window.show()
 
     @property
     def hidden(self) -> bool:
@@ -187,12 +193,8 @@ class WindowController:
     def fullscreened(self) -> bool:
         return self._window.isFullScreen()
 
-    def minimize(self):
-        self._window.showMinimized()
-    def restore(self):
-        self._window.showNormal()
-    def maximize(self):
-        self._window.showMaximized()
-    def fullscreen(self):
-        self._window.showFullScreen()
+    def minimize  (self): self._window.showMinimized()
+    def restore   (self): self._window.showNormal()
+    def maximize  (self): self._window.showMaximized()
+    def fullscreen(self): self._window.showFullScreen()
     """ window operations end """

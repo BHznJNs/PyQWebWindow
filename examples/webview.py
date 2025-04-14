@@ -66,6 +66,13 @@ def python_binding_test():
     return window
 
 def python_worker_test():
+    """
+    After the window appear 3 seconds, there should appear three alert, shows:
+    "Hello user1!"
+    "Hello user2!"
+    "Hello user3!"
+    The order is not fixed.
+    """
     def task(user_name: str) -> str:
         from time import sleep
         sleep(3)
@@ -78,5 +85,5 @@ def python_worker_test():
     return window
 
 app = QAppManager(debugging=True)
-window = load_html_test()
+window = python_worker_test()
 app.exec()

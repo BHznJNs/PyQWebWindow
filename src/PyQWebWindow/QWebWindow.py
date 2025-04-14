@@ -1,5 +1,6 @@
 from .controllers import WebViewController, BindingController, WindowController
 from .EventListener import EventListener
+from .ipc import QIpcServer, QIpcClient, IpcClient
 from .utils import INITIAL_SCRIPT, LOADED_SCRIPT
 
 class QWebWindow(WebViewController, BindingController, WindowController):
@@ -22,16 +23,17 @@ class QWebWindow(WebViewController, BindingController, WindowController):
         force_darkmode      : bool = False,
         show_scrollbars     : bool = True,
     ):
-        BindingController.__init__(self)
-        WebViewController.__init__(self,
-            enable_clipboard, enable_javascript, enable_localstorage,
-            enable_webgl, force_darkmode, show_scrollbars)
         WindowController.__init__(self,
             title, icon, pos, size,
             minimum_size, maximum_size,
             resizable, on_top, hide_when_close)
+        WebViewController.__init__(self,
+            enable_clipboard, enable_javascript, enable_localstorage,
+            enable_webgl, force_darkmode, show_scrollbars, self._window)
+        BindingController.__init__(self, self._window)
         self._window_fill_with_browser_widget(self._webview)
         self._init_event_listener()
+        self._ipc_client = None
 
     def _init_event_listener(self):
         event_listener = self.event_listener = EventListener()
@@ -49,6 +51,16 @@ class QWebWindow(WebViewController, BindingController, WindowController):
         window.shown.connect(event_listener.on_window_shown)
         window.hidden.connect(event_listener.on_window_hidden)
         window.closed.connect(event_listener.on_window_closed)
+
+    def use_ipc_server(self, server: QIpcServer):
+        server._use_parent(self._window)
+
+    def use_ipc_client(self, client: IpcClient | QIpcClient):
+        if type(client) is QIpcClient:
+            client._use_parent(self._window)
+            return
+        assert type(client) is IpcClient
+        client._setup_worker(self._window)
 
     def start(self, show_when_ready: bool = True):
         self._binding_register_backend()

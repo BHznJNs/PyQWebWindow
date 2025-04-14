@@ -1,13 +1,14 @@
+from PySide6.QtCore import QObject
 from PySide6.QtWebChannel import QWebChannel
 
 class BindingController:
     from ..QWorker import QWorker
     from ..utils.Serializable import SerializableCallable
 
-    def __init__(self):
+    def __init__(self, parent: QObject):
         from .Backend import Backend
-        self._backend = Backend()
-        self._channel = QWebChannel()
+        self._backend = Backend(parent)
+        self._channel = QWebChannel(parent)
 
     def _binding_register_backend(self):
         self._channel.registerObject("backend", self._backend)

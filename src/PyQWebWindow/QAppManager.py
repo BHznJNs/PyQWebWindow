@@ -1,17 +1,29 @@
 from typing import Literal
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
+
 from .QArgv import QArgv
 
+DEFAULT_DEBUGGING_PORT = 9222
+
 class QAppManager:
-    _app_singleton: QApplication | None
+    _app_singleton: QApplication | None = None
 
     def __init__(self,
         debugging: bool = False,
-        debugging_port: int = 9222,
+        debugging_port: int = DEFAULT_DEBUGGING_PORT,
         remote_allow_origin: str = "*",
-        theme: Literal["system", "dark", "light"] = "system"
+        theme: Literal["system", "dark", "light"] = "system",
     ):
+        """Initializes the QAppManager with the specified parameters.
+        This constructor should be called at most once in a process.
+
+        Args:
+            debugging: Enables debugging mode. Defaults to False.
+            debugging_port: The port for remote debugging. Defaults to DEFAULT_DEBUGGING_PORT.
+            remote_allow_origin: Allowed origins for remote access. Defaults to "*".
+            theme: The theme of the application. Defaults to "system".
+        """
         if QAppManager._app_singleton is not None: return
 
         argv = QArgv()

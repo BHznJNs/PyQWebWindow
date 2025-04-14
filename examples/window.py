@@ -22,6 +22,11 @@ def set_title_test():
     window.start()
     return window
 
+def show_when_ready_test():
+    window = QWebWindow()
+    window.start(show_when_ready=False)
+    return window
+
 def hide_when_close_test():
     window = QWebWindow(hide_when_close=True)
     window.start()

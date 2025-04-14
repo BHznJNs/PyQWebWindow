@@ -2,6 +2,7 @@ import os
 
 from PySide6.QtCore import QUrl
 from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QWidget
 from PySide6.QtWebEngineCore import QWebEngineSettings, QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebChannel import QWebChannel
@@ -41,8 +42,9 @@ class WebViewController:
         enable_webgl        : bool,
         force_darkmode      : bool,
         show_scrollbars     : bool,
+        parent              : QWidget,
     ):
-        self._webview = QWebEngineView()
+        self._webview = QWebEngineView(parent)
         self._webview.setPage(CustomWebEnginePage(self._webview))
 
         settings = self._webview.settings()

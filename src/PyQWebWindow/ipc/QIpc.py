@@ -1,28 +1,31 @@
-import pickle
 import uuid
+from PySide6.QtCore import QObject
 from PySide6.QtNetwork import QLocalServer, QLocalSocket
+
+from .Serializer import IpcSerializer
+from .EventEmitter import IpcEventEmitter
 from ..utils.Serializable import Serializable, SerializableCallable
 
-class IpcPayload:
-    @staticmethod
-    def dumps(obj: Serializable):
-        return pickle.dumps(obj)
-    @staticmethod
-    def loads(data: bytes):
-        return pickle.loads(data)
+"""QIpc
+The `QIpcServer` and `QIpcClient` should both work in a Qt Application.
+The server is intended work in main application, and client in child application.
+"""
 
-class IpcServer:
+class QIpcServer(IpcEventEmitter):
     def __init__(self, server_name: str = str(uuid.uuid4())):
-        self._event_dict: dict[str, list[SerializableCallable]] = {}
+        super().__init__()
         self._clients: set[QLocalSocket] = set()
         self.server_name = server_name
-        IpcServer.ensure_server_name(server_name)
+        QIpcServer.ensure_server_name(server_name)
 
         server = self._server = QLocalServer()
         if not server.listen(server_name):
             err = server.errorString()
             raise RuntimeError(f"Cannot listen {server_name}: {err}")
         server.newConnection.connect(self._handle_connection)
+
+    def _use_parent(self, parent: QObject):
+        self._server.setParent(parent)
 
     @staticmethod
     def ensure_server_name(server_name: str):
@@ -45,18 +48,13 @@ class IpcServer:
     def _handle_event(self, client: QLocalSocket):
         while client.bytesAvailable():
             data = client.readAll().data()
-            decoded: list[Serializable] = IpcPayload.loads(data)
+            decoded: list[Serializable] = IpcSerializer.loads(data)
             event_name = str(decoded[0])
             args = decoded[1:]
-            events = self._event_dict[event_name]
-            for event in events: event(*args)
-
-    def on(self, event_name: str, callback: SerializableCallable):
-        self._event_dict.setdefault(event_name, [])
-        self._event_dict[event_name].append(callback)
+            self._call_event(event_name, args)
 
     def emit(self, event_name: str, *args: Serializable):
-        encoded = IpcPayload.dumps([event_name, *args])
+        encoded = IpcSerializer.dumps([event_name, *args])
         for client in self._clients:
             client.write(encoded)
 
@@ -64,32 +62,30 @@ class IpcServer:
         self._server.close()
         QLocalServer.removeServer(self.server_name)
 
-class IpcClient:
+class QIpcClient(IpcEventEmitter):
     connect_timeout_ms = 300
 
     def __init__(self, server_name: str):
-        self._event_dict: dict[str, list[SerializableCallable]] = {}
+        super().__init__()
         socket = self._socket = QLocalSocket()
         socket.connectToServer(server_name)
-        if not socket.waitForConnected(IpcClient.connect_timeout_ms):
+        if not socket.waitForConnected(QIpcClient.connect_timeout_ms):
             raise RuntimeError(f"Cannot connect to server {server_name}, is server on?")
         socket.readyRead.connect(self._handle_event)
+
+    def _use_parent(self, parent: QObject):
+        self._socket.setParent(parent)
 
     def _handle_event(self):
         while self._socket.bytesAvailable():
             data = self._socket.readAll().data()
-            decoded: list[Serializable] = IpcPayload.loads(data)
+            decoded: list[Serializable] = IpcSerializer.loads(data)
             event_name = str(decoded[0])
             args = decoded[1:]
-            events = self._event_dict[event_name]
-            for event in events: event(*args)
-
-    def on(self, event_name: str, callback: SerializableCallable):
-        self._event_dict.setdefault(event_name, [])
-        self._event_dict[event_name].append(callback)
+            self._call_event(event_name, args)
 
     def emit(self, event_name: str, *args: Serializable):
-        encoded = IpcPayload.dumps([event_name, *args])
+        encoded = IpcSerializer.dumps([event_name, *args])
         self._socket.write(encoded)
 
     def close(self):
