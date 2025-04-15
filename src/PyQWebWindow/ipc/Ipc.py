@@ -1,19 +1,17 @@
-import asyncio
-import sys
-from typing import Callable
 import uuid
 import threading
 import zmq
 import zmq.asyncio
 
+from typing import Callable
 from PySide6.QtCore import QObject, QThread, Signal, Slot
-from .EventEmitter import IpcEventEmitter, IpcThreadSafeEventEmitter
+from .EventEmitter import IpcAEventEmitter
 from .Serializer import IpcSerializer
 from ..utils import Serializable
 
 DEFAULT_IPC_PORT = 5556
 
-class IpcServer(IpcThreadSafeEventEmitter):
+class IpcServer(IpcAEventEmitter):
     class _Worker(threading.Thread):
         def __init__(self,
             context: zmq.Context,
@@ -115,7 +113,7 @@ class IpcServer(IpcThreadSafeEventEmitter):
         self._context.term()
         self._is_running = False
 
-class IpcClient(IpcThreadSafeEventEmitter):
+class IpcClient(IpcAEventEmitter):
     class _Worker(QThread):
         emitted = Signal(bytes)
         received = Signal(bytes)

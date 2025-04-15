@@ -42,7 +42,10 @@ class IpcEventEmitter(ABC):
     @abstractmethod
     def emit(self, event_name: str, *args: Serializable): pass
 
-class IpcThreadSafeEventEmitter(IpcEventEmitter):
+class IpcAEventEmitter(IpcEventEmitter):
+    """
+    Atomic Event Emitter
+    """
     def __init__(self):
         super().__init__()
         self._lock = Lock()
