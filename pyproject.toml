@@ -14,7 +14,8 @@ classifiers = [
 license = "Apache-2.0"
 license-files = ["LICEN[CS]E*"]
 dependencies = [
-  "PySide6"
+  "PySide6==6.9.0",
+  "pyzmq==26.4.0",
 ]
 
 [project.urls]

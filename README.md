@@ -22,6 +22,13 @@ window.start()
 app.exec()
 ```
 
+## Useful Resources
+
+- System tray icon: [pystray](https://github.com/moses-palmer/pystray)
+- System dark mode detection: [darkdetect](https://github.com/albertosottile/darkdetect)
+- System notification: [notify-py](https://github.com/ms7m/notify-py)
+- Clipboard: [pyperclip](https://github.com/asweigart/pyperclip)
+
 ## Development
 
 ### Run Tests
