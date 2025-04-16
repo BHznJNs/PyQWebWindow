@@ -129,6 +129,7 @@ class IpcClient(IpcAEventEmitter):
             context = self._context = zmq.Context()
             socket = self._socket = context.socket(zmq.DEALER)
             socket.setsockopt(zmq.IDENTITY, id.encode())
+            socket.setsockopt(zmq.LINGER, 0)
             self.emitted.connect(self._send_message)
             self.connected.connect(lambda: self._send_message(b"reg"))
 
@@ -157,18 +158,17 @@ class IpcClient(IpcAEventEmitter):
             socket.connect(f"tcp://127.0.0.1:{self._server_port}")
             self.connected.emit()
             while self._is_running:
-                try: events = socket.poll(self._poll_timeout, zmq.POLLIN)
-                except zmq.error.ContextTerminated: break
+                events = socket.poll(self._poll_timeout, zmq.POLLIN)
                 if not (events & zmq.POLLIN): continue
                 ret = self._receive_message()
                 if not ret: break
 
             socket.close()
+            self._context.term()
             self.disconnected.emit()
 
         def stop(self):
             self._is_running = False
-            self._context.term()
 
     def __init__(self,
         id: str = str(uuid.uuid4()),

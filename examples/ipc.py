@@ -57,15 +57,16 @@ def ipc_event_emit_on():
     server.stop()
 
 def ipc_server_send_first_child():
-    def empty_event_handler():
-        print("Empty event received, to be exited")
+    def exit_event_handler():
+        print("Exit event received, to be exited")
         client.stop()
         window.close()
 
     app = QAppManager()
     window = QWebWindow()
     client = IpcClient()
-    client.on("empty-event", empty_event_handler)
+    client.on("exit-event", exit_event_handler)
+    client.disconnected.connect(lambda: print("client disconnected"))
     window.use_ipc_client(client)
     window.start()
     app.exec()
@@ -78,11 +79,11 @@ def ipc_server_send_first():
     proc.start()
 
     sleep(5)
-    server.emit("empty-event")
+    server.emit("exit-event")
 
     proc.join()
     server.stop()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     freeze_support()
     ipc_server_send_first()
