@@ -29,9 +29,10 @@ def show_when_ready_test():
 
 def hide_when_close_test():
     window = QWebWindow(hide_when_close=True)
+    window.event_listener.add_event_listener("window_closed", lambda: print("closed"))
     window.start()
     return window
 
 app = QAppManager(debugging=True)
-window = launch_test()
+window = hide_when_close_test()
 app.exec()
