@@ -163,7 +163,6 @@ class IpcClient(IpcAEventEmitter):
             socket.close()
             self._context.term()
             self.disconnected.emit()
-            self._is_running = False
 
         def stop(self):
             self._is_running = False
@@ -194,6 +193,10 @@ class IpcClient(IpcAEventEmitter):
         self._call_event(event_name, args)
 
     @property
+    def is_connected(self) -> bool:
+        return self._is_connected
+
+    @property
     def connected(self) -> SignalInstance:
         return self._worker.connected
 
@@ -210,4 +213,5 @@ class IpcClient(IpcAEventEmitter):
         if not self._is_connected: return
         self._worker.stop()
         self._worker.wait()
+        self._worker.deleteLater()
         self._is_connected = False

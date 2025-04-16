@@ -18,17 +18,17 @@ def ipc_event_emit_on_child():
     def exit():
         print("To be exited")
         client.stop()
-        app.quit()
+        window.close()
 
     app = QAppManager()
     window = QWebWindow()
     client = IpcClient()
     client.on("foo-client", bar)
     client.on("exit", exit)
-    client.after_connected(lambda: client.emit("foo-server1", "bar-server1"))
+    client.connected.connect(lambda: client.emit("foo-server1", "bar-server1"))
+    client.disconnected.connect(lambda: print("client disconnected"))
     window.use_ipc_client(client)
     window.start()
-    print("application started")
     app.exec()
 
 def ipc_event_emit_on():
