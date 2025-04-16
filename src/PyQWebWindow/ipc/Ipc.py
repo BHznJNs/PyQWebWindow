@@ -3,8 +3,7 @@ import threading
 import zmq
 import zmq.asyncio
 
-from typing import Callable
-from PySide6.QtCore import QObject, QThread, Signal, Slot
+from PySide6.QtCore import QObject, QThread, Signal, Slot, SignalInstance
 from .EventEmitter import IpcAEventEmitter
 from .Serializer import IpcSerializer
 from ..utils import Serializable
@@ -194,8 +193,13 @@ class IpcClient(IpcAEventEmitter):
         args = msg_parsed[1:]
         self._call_event(event_name, args)
 
-    def after_connected(self, callback: Callable[[], None]):
-        self._worker.connected.connect(callback)
+    @property
+    def connected(self) -> SignalInstance:
+        return self._worker.connected
+
+    @property
+    def disconnected(self) -> SignalInstance:
+        return self._worker.disconnected
 
     def emit(self, event_name: str, *args: Serializable):
         if not self._is_connected: return
