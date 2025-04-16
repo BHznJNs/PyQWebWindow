@@ -43,6 +43,8 @@ class IpcServer(IpcAEventEmitter):
 
         def _process_message(self, id: bytes, msg: bytes):
             self._clients.add(id)
+            if msg == b"reg": return # process registration message
+
             msg_parsed: list[Serializable] = IpcSerializer.loads(msg)
             event_name = str(msg_parsed[0])
             args = msg_parsed[1:]
@@ -128,6 +130,7 @@ class IpcClient(IpcAEventEmitter):
             socket = self._socket = context.socket(zmq.DEALER)
             socket.setsockopt(zmq.IDENTITY, id.encode())
             self.emitted.connect(self._send_message)
+            self.connected.connect(lambda: self._send_message(b"reg"))
 
         @Slot(bytes)
         def _send_message(self, message: bytes):
