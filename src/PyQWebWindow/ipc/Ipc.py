@@ -119,10 +119,9 @@ class IpcClient(IpcAEventEmitter):
         connected = Signal()
         disconnected = Signal()
 
-        def __init__(self, id: str, port: int, poll_timeout: int, parent: "IpcClient"):
+        def __init__(self, id: str, port: int, poll_timeout: int):
             super().__init__(None)
             self._is_running = False
-            self._parent = parent
             self._server_port = port
             self._poll_timeout = poll_timeout
             context = self._context = zmq.Context()
@@ -155,17 +154,18 @@ class IpcClient(IpcAEventEmitter):
             socket.connect(f"tcp://127.0.0.1:{self._server_port}")
             self.connected.emit()
             while self._is_running:
-                events = socket.poll(self._poll_timeout, zmq.POLLIN)
+                try: events = socket.poll(self._poll_timeout, zmq.POLLIN)
+                except zmq.error.ContextTerminated: break
                 if not (events & zmq.POLLIN): continue
                 ret = self._receive_message()
                 if not ret: break
 
             socket.close()
-            self._context.term()
             self.disconnected.emit()
 
         def stop(self):
             self._is_running = False
+            self._context.term()
 
     def __init__(self,
         id: str = str(uuid.uuid4()),
@@ -174,7 +174,7 @@ class IpcClient(IpcAEventEmitter):
     ):
         super().__init__()
         self._is_connected = False
-        worker = self._worker = IpcClient._Worker(id, port, poll_timeout, self)
+        worker = self._worker = IpcClient._Worker(id, port, poll_timeout)
         worker.received.connect(self._received_handler)
 
         def set_is_connected(connected: bool): self._is_connected = connected
@@ -213,5 +213,4 @@ class IpcClient(IpcAEventEmitter):
         if not self._is_connected: return
         self._worker.stop()
         self._worker.wait()
-        self._worker.deleteLater()
         self._is_connected = False

@@ -61,6 +61,8 @@ class QWebWindow(WebViewController, BindingController, WindowController):
             return
         assert type(client) is IpcClient
         client._setup_worker(self._window)
+        self.event_listener\
+            .add_event_listener("window_closed", lambda: client.stop())
 
     def start(self, show_when_ready: bool = True):
         self._binding_register_backend()
