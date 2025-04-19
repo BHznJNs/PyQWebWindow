@@ -44,10 +44,11 @@ class WebViewController:
         show_scrollbars     : bool,
         parent              : QWidget,
     ):
-        self._webview = QWebEngineView(parent)
-        self._webview.setPage(CustomWebEnginePage(self._webview))
+        self._webview: QWebEngineView = QWebEngineView(parent)
+        self._webpage: QWebEnginePage = CustomWebEnginePage(self._webview)
+        self._webview.setPage(self._webpage)
 
-        settings = self._webview.settings()
+        settings = self._webpage.settings()
         settings.setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent    , True)
         settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls  , True)
         settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
@@ -58,12 +59,18 @@ class WebViewController:
         settings.setAttribute(QWebEngineSettings.WebAttribute.ForceDarkMode               , force_darkmode     )
         settings.setAttribute(QWebEngineSettings.WebAttribute.ShowScrollBars              , show_scrollbars    )
 
+    def __del__(self):
+        self._webpage.deleteLater()
+        self._webpage = None # type: ignore
+        self._webview.deleteLater()
+        self._webview = None # type: ignore
+
     @property
     def _webview_has_bound_channel(self):
-        return self._webview.page().webChannel() is not None
+        return self._webpage.webChannel() is not None
 
     def _webview_bind_channel(self, channel: QWebChannel):
-        self._webview.page().setWebChannel(channel)
+        self._webpage.setWebChannel(channel)
 
     @property
     def webview(self) -> QWebEngineView:
@@ -71,10 +78,10 @@ class WebViewController:
 
     @property
     def webpage(self) -> QWebEnginePage:
-        return self._webview.page()
+        return self._webpage
 
     def load_html(self, html: str):
-        self._webview.setHtml(html)
+        self._webpage.setHtml(html)
 
     def load_file(self, path: str):
         """load file
@@ -90,11 +97,11 @@ class WebViewController:
             caller_dir_path = os.path.dirname(caller_path)
             target_path = os.path.join(caller_dir_path, os.path.normpath(path))
         qurl = QUrl.fromLocalFile(target_path)
-        self._webview.load(qurl)
+        self._webpage.load(qurl)
 
     def load_url(self, url: str):
-        self._webview.load(QUrl(url))
+        self._webpage.load(QUrl(url))
 
     def eval_js(self, *scripts: str):
         for script in scripts:
-            self._webview.page().runJavaScript(script)
+            self._webpage.runJavaScript(script)

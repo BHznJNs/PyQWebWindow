@@ -47,7 +47,7 @@ class WindowController:
         on_top   : bool,
         hide_when_close: bool,
     ):
-        self._window = _MainWindow(hide_when_close)
+        self._window: _MainWindow = _MainWindow(hide_when_close)
         self.resizable = resizable
         self.on_top = on_top
         if title        is not None: self.title        = title
@@ -56,6 +56,10 @@ class WindowController:
         if minimum_size is not None: self.minimum_size = minimum_size
         if maximum_size is not None: self.maximum_size = maximum_size
         if pos          is not None: self.pos = pos
+
+    def __del__(self):
+        self._window.deleteLater()
+        self._window = None # type: ignore
 
     def _window_fill_with_browser_widget(self, browser_widget: QWebEngineView):
         self._window.setCentralWidget(browser_widget)
