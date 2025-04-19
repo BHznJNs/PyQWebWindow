@@ -14,14 +14,14 @@ class IpcClient(IpcAEventEmitter):
         connected = Signal()
         disconnected = Signal()
 
-        def __init__(self, id: str, port: int, poll_timeout: int):
+        def __init__(self, client_id: str, port: int, poll_timeout: int):
             super().__init__(None)
             self._is_running = False
             self._server_port = port
             self._poll_timeout = poll_timeout
             context = self._context = zmq.Context()
             socket = self._socket = context.socket(zmq.DEALER)
-            socket.setsockopt(zmq.IDENTITY, id.encode())
+            socket.setsockopt(zmq.IDENTITY, client_id.encode())
             socket.setsockopt(zmq.LINGER, 0)
             self.emitted.connect(self._send_message)
             self.connected.connect(lambda: self._send_message(b"reg"))
@@ -64,13 +64,13 @@ class IpcClient(IpcAEventEmitter):
             self._is_running = False
 
     def __init__(self,
-        id: str = str(uuid.uuid4()),
+        client_id: str = str(uuid.uuid4()),
         port: int = DEFAULT_IPC_PORT,
         poll_timeout: int = 100,
     ):
         super().__init__()
         self._is_connected = False
-        worker = self._worker = IpcClient._Worker(id, port, poll_timeout)
+        worker = self._worker = IpcClient._Worker(client_id, port, poll_timeout)
         worker.received.connect(self._received_handler)
 
         def set_is_connected(connected: bool): self._is_connected = connected

@@ -1,20 +1,21 @@
 import sys
 import os
-from multiprocessing import freeze_support
 
 sys.path.insert(0,
     os.path.abspath(
         os.path.join(
             os.path.dirname(__file__), "../src")))
 
-from PyQWebWindow import QAppManager, QIpcServer, QIpcClient, IpcServer
+from PyQWebWindow.QAppManager import QAppManager
+from PyQWebWindow.ipc.QIpc.server import QIpcServer
+from PyQWebWindow.ipc.QIpc.client import QIpcClient
 
 def qipc_event_emit():
     def event(bar: str):
         print("server received: ", bar)
         assert bar == "bar"
         app.quit()
-
+    
     server = QIpcServer()
     server.on("foo", event)
     client = QIpcClient(server.server_name)

@@ -2,8 +2,6 @@ from typing import Literal
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 
-from .QArgv import QArgv
-
 DEFAULT_DEBUGGING_PORT = 9222
 
 class QAppManager:
@@ -25,6 +23,7 @@ class QAppManager:
             remote_allow_origin: Allowed origins for remote access. Defaults to "*".
             theme: The theme of the application. Defaults to "system".
         """
+        from .QArgv import QArgv
         if QAppManager._app_singleton is not None: return
 
         argv = QArgv()

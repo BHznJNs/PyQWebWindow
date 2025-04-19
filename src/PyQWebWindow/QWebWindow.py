@@ -1,6 +1,8 @@
 from .controllers import WebViewController, BindingController, WindowController
 from .EventListener import EventListener
-from .ipc import QIpcServer, QIpcClient, IpcClient
+from .ipc.QIpc.server import QIpcServer
+from .ipc.QIpc.client import QIpcClient
+from .ipc.MqIpc.client import IpcClient
 from .utils import INITIAL_SCRIPT, LOADED_SCRIPT
 
 class QWebWindow(WebViewController, BindingController, WindowController):

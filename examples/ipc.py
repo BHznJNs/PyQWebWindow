@@ -8,7 +8,7 @@ sys.path.insert(0,
         os.path.join(
             os.path.dirname(__file__), "../src")))
 
-from PyQWebWindow import QAppManager, QWebWindow, IpcServer, IpcClient
+from PyQWebWindow.all import QAppManager, QWebWindow, IpcServer, IpcClient
 
 def ipc_event_emit_on_child():
     def bar(bar: str):

@@ -38,8 +38,8 @@ class IpcServer(IpcAEventEmitter):
                 if e.errno in (zmq.ETERM, zmq.ENOTSOCK, zmq.ECONNREFUSED, zmq.ECONNRESET):
                     self._remove_client(client_id)
 
-        def _process_message(self, id: bytes, message: bytes):
-            self._clients.add(id)
+        def _process_message(self, client_id: bytes, message: bytes):
+            self._clients.add(client_id)
             if message == b"reg": return # process registration message
 
             message_parsed: list[Serializable] = IpcSerializer.loads(message)
@@ -66,10 +66,10 @@ class IpcServer(IpcAEventEmitter):
                         client_received = True
 
                 if client_received:
-                    try: id, message = self._server_socket.recv_multipart(zmq.NOBLOCK)
+                    try: client_id, message = self._server_socket.recv_multipart(zmq.NOBLOCK)
                     except zmq.error.ContextTerminated: break
                     except (zmq.error.Again, zmq.error.ZMQError): continue
-                    self._process_message(id, message)
+                    self._process_message(client_id, message)
 
                 if inproc_received:
                     try: bytes_message = self._inproc_socket.recv(zmq.NOBLOCK)

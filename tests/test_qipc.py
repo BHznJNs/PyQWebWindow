@@ -1,4 +1,4 @@
-from PyQWebWindow import QAppManager, QIpcServer, QIpcClient
+from PyQWebWindow.all import QAppManager, QIpcServer, QIpcClient
 
 def test_event_emit():
     """

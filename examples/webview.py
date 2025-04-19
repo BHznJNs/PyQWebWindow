@@ -6,7 +6,7 @@ sys.path.insert(0,
         os.path.join(
             os.path.dirname(__file__), "../src")))
 
-from PyQWebWindow import QWebWindow, QAppManager
+from PyQWebWindow.all import QWebWindow, QAppManager
 
 def load_html_test():
     window = QWebWindow()

@@ -38,7 +38,6 @@ class QIpcServer(IpcEventEmitter):
 
     def _handle_disconnected(self, client: QLocalSocket):
         self._clients.remove(client)
-        client.deleteLater()
 
     def _handle_event(self, client: QLocalSocket):
         while client.bytesAvailable():

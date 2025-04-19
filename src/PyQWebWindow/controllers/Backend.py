@@ -5,7 +5,7 @@ from ..utils.Serializable import Serializable, SerializableCallable
 class Backend(QObject):
     _task_finished = Signal(str, "QVariant") # type: ignore
 
-    def __init__(self, parent: QObject):
+    def __init__(self, parent: QObject | None = None):
         super().__init__(parent)
         # store workers in set to prevent the workers to be cleared by GC
         self._working_workers: set[QWorker] = set()
