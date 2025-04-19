@@ -44,8 +44,8 @@ class WebViewController:
         show_scrollbars     : bool,
         parent              : QWidget,
     ):
-        self._webview: QWebEngineView = QWebEngineView(parent)
-        self._webpage: QWebEnginePage = CustomWebEnginePage(self._webview)
+        self._webview = QWebEngineView(parent)
+        self._webpage = CustomWebEnginePage(self._webview)
         self._webview.setPage(self._webpage)
 
         settings = self._webpage.settings()
@@ -58,12 +58,6 @@ class WebViewController:
         settings.setAttribute(QWebEngineSettings.WebAttribute.WebGLEnabled                , enable_webgl       )
         settings.setAttribute(QWebEngineSettings.WebAttribute.ForceDarkMode               , force_darkmode     )
         settings.setAttribute(QWebEngineSettings.WebAttribute.ShowScrollBars              , show_scrollbars    )
-
-    def __del__(self):
-        self._webpage.deleteLater()
-        self._webpage = None # type: ignore
-        self._webview.deleteLater()
-        self._webview = None # type: ignore
 
     @property
     def _webview_has_bound_channel(self):
