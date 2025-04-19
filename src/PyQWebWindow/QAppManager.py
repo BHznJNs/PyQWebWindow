@@ -14,6 +14,7 @@ class QAppManager:
         debugging_port: int = DEFAULT_DEBUGGING_PORT,
         remote_allow_origin: str = "*",
         theme: Literal["system", "dark", "light"] = "system",
+        auto_quit: bool = True,
     ):
         """Initializes the QAppManager with the specified parameters.
         This constructor should be called at most once in a process.
@@ -31,7 +32,8 @@ class QAppManager:
             argv.set_key("remote-debugging-port", debugging_port)
             argv.set_key("remote-allow-origins", remote_allow_origin)
 
-        QAppManager._app_singleton = QApplication(argv.to_list())
+        app = QAppManager._app_singleton = QApplication(argv.to_list())
+        app.setQuitOnLastWindowClosed(auto_quit)
         self.theme = theme
 
     @staticmethod
@@ -52,9 +54,11 @@ class QAppManager:
         app.styleHints().setColorScheme(QAppManager._parse_theme(new_theme))
         app.setPalette(app.palette())
 
-    def exec(self):
+    def exec(self) -> int:
         assert QAppManager._app_singleton is not None
-        QAppManager._app_singleton.exec()
+        exit_code = QAppManager._app_singleton.exec()
+        QAppManager._app_singleton = None
+        return exit_code
 
     def quit(self):
         assert QAppManager._app_singleton is not None

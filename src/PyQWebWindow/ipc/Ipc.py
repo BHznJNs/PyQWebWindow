@@ -41,13 +41,13 @@ class IpcServer(IpcAEventEmitter):
                 if e.errno in (zmq.ETERM, zmq.ENOTSOCK, zmq.ECONNREFUSED, zmq.ECONNRESET):
                     self._remove_client(client_id)
 
-        def _process_message(self, id: bytes, msg: bytes):
+        def _process_message(self, id: bytes, message: bytes):
             self._clients.add(id)
-            if msg == b"reg": return # process registration message
+            if message == b"reg": return # process registration message
 
-            msg_parsed: list[Serializable] = IpcSerializer.loads(msg)
-            event_name = str(msg_parsed[0])
-            args = msg_parsed[1:]
+            message_parsed: list[Serializable] = IpcSerializer.loads(message)
+            event_name = str(message_parsed[0])
+            args = message_parsed[1:]
             self._parent._call_event(event_name, args)
 
         def run(self):
@@ -68,20 +68,21 @@ class IpcServer(IpcAEventEmitter):
                     if socket is self._server_socket and event & zmq.POLLIN:
                         client_received = True
 
+                if client_received:
+                    try: id, message = self._server_socket.recv_multipart(zmq.NOBLOCK)
+                    except zmq.error.ContextTerminated: break
+                    except (zmq.error.Again, zmq.error.ZMQError): continue
+                    self._process_message(id, message)
+
                 if inproc_received:
-                    try: bytes_msg = self._inproc_socket.recv(zmq.NOBLOCK)
+                    try: bytes_message = self._inproc_socket.recv(zmq.NOBLOCK)
                     except zmq.error.ContextTerminated: break
                     except (zmq.error.Again, zmq.error.ZMQError): continue
 
-                    assert type(bytes_msg) is bytes
+                    assert type(bytes_message) is bytes
                     # send to all clients
                     for client_id in self._clients:
-                        self._send_message(client_id, bytes_msg)
-                if client_received:
-                    try: id, msg = self._server_socket.recv_multipart(zmq.NOBLOCK)
-                    except zmq.error.ContextTerminated: break
-                    except (zmq.error.Again, zmq.error.ZMQError): continue
-                    self._process_message(id, msg)
+                        self._send_message(client_id, bytes_message)
 
             self._inproc_socket.close()
             self._server_socket.close()
@@ -140,17 +141,18 @@ class IpcClient(IpcAEventEmitter):
                 self.disconnected.emit()
                 self.stop()
 
-        def _receive_message(self) -> bool:
+        def _receive_message(self):
             while True:
                 event = self._socket.getsockopt(zmq.EVENTS)
                 assert type(event) is int
                 if not (event & zmq.POLLIN): break
 
-                try: msg = self._socket.recv(zmq.NOBLOCK)
+                try: message = self._socket.recv(zmq.NOBLOCK)
                 except zmq.error.Again: break
-                except zmq.error.ContextTerminated: return False
-                self.received.emit(msg)
-            return True
+                except zmq.error.ContextTerminated:
+                    self.stop()
+                    break
+                self.received.emit(message)
 
         def run(self):
             self._is_running = True
@@ -160,8 +162,7 @@ class IpcClient(IpcAEventEmitter):
             while self._is_running:
                 events = socket.poll(self._poll_timeout, zmq.POLLIN)
                 if not (events & zmq.POLLIN): continue
-                ret = self._receive_message()
-                if not ret: break
+                self._receive_message()
 
             socket.close()
             self._context.term()
@@ -189,10 +190,10 @@ class IpcClient(IpcAEventEmitter):
         worker.setParent(parent)
         worker.start()
 
-    def _received_handler(self, msg: bytes):
-        msg_parsed: list[Serializable] = IpcSerializer.loads(msg)
-        event_name = str(msg_parsed[0])
-        args = msg_parsed[1:]
+    def _received_handler(self, message: bytes):
+        message_parsed: list[Serializable] = IpcSerializer.loads(message)
+        event_name = str(message_parsed[0])
+        args = message_parsed[1:]
         self._call_event(event_name, args)
 
     @property
