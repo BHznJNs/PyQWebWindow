@@ -13,7 +13,7 @@ pip install PyQWebWindow
 ### Hello world
 
 ```python
-from PyQWebWindow import QWebWindow, QAppManager
+from PyQWebWindow.all import QWebWindow, QAppManager
 
 app = QAppManager(debugging=True)
 window = QWebWindow()

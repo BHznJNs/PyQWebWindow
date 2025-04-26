@@ -1,5 +1,6 @@
 from .controllers import WebViewController, BindingController, WindowController
 from .EventListener import EventListener
+from .QContextMenu import QContextMenu
 from .ipc.QIpc.server import QIpcServer
 from .ipc.QIpc.client import QIpcClient
 from .ipc.MqIpc.client import IpcClient
@@ -53,6 +54,17 @@ class QWebWindow(WebViewController, BindingController, WindowController):
         window.shown.connect(event_listener.on_window_shown)
         window.hidden.connect(event_listener.on_window_hidden)
         window.closed.connect(event_listener.on_window_closed)
+
+    def use_context_menu(self, menu: QContextMenu):
+        from PySide6.QtCore import Qt, QPoint
+        def show_contextmenu(pos: QPoint):
+            nonlocal menu, webview
+            global_pos = webview.mapToGlobal(pos)
+            menu._show(webview, global_pos)
+
+        webview = self._webview
+        webview.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        webview.customContextMenuRequested.connect(show_contextmenu)
 
     def use_ipc_server(self, server: QIpcServer):
         server._use_parent(self._window)
