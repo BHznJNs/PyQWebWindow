@@ -1,6 +1,8 @@
 from typing import Literal
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
+from .ipc.QIpc.client import QIpcClient
+from .ipc.MqIpc.client import IpcClient
 
 DEFAULT_DEBUGGING_PORT = 9222
 
@@ -52,6 +54,14 @@ class QAppManager:
         assert app is not None
         app.styleHints().setColorScheme(QAppManager._parse_theme(new_theme))
         app.setPalette(app.palette())
+
+    def use_ipc_client(self, client: IpcClient | QIpcClient):
+        assert QAppManager._app_singleton is not None
+        if type(client) is QIpcClient:
+            client._use_parent(QAppManager._app_singleton)
+            return
+        assert type(client) is IpcClient
+        client._setup_worker(QAppManager._app_singleton)
 
     def exec(self) -> int:
         assert QAppManager._app_singleton is not None
