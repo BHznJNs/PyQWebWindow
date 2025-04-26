@@ -16,6 +16,7 @@ class _MainWindow(QMainWindow):
     def __init__(self, hide_when_close: bool) -> None:
         super().__init__(None)
         self._hide_when_close = hide_when_close
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, not hide_when_close)
 
     def resizeEvent(self, event: QResizeEvent):
         resized_size = event.size()
