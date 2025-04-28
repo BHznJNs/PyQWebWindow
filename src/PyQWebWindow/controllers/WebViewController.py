@@ -50,7 +50,7 @@ class WebViewController:
         self._webview.setPage(self._webpage)
 
         if background_color is not None:
-            self._webpage.setBackgroundColor(background_color)
+            self.background_color = background_color
 
         settings = self._webpage.settings()
         settings.setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent    , True)
@@ -77,6 +77,13 @@ class WebViewController:
     @property
     def webpage(self) -> QWebEnginePage:
         return self._webpage
+
+    @property
+    def background_color(self) -> str:
+        return self._webpage.backgroundColor().name()
+    @background_color.setter
+    def background_color(self, color: str):
+        self._webpage.setBackgroundColor(color)
 
     def load_html(self, html: str):
         self._webpage.setHtml(html)
