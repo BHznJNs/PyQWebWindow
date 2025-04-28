@@ -36,6 +36,7 @@ class CustomWebEnginePage(QWebEnginePage):
 
 class WebViewController:
     def __init__(self,
+        background_color    : str | None,
         enable_clipboard    : bool,
         enable_javascript   : bool,
         enable_localstorage : bool,
@@ -47,6 +48,9 @@ class WebViewController:
         self._webview = QWebEngineView(parent)
         self._webpage = CustomWebEnginePage(self._webview)
         self._webview.setPage(self._webpage)
+
+        if background_color is not None:
+            self._webpage.setBackgroundColor(background_color)
 
         settings = self._webpage.settings()
         settings.setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent    , True)

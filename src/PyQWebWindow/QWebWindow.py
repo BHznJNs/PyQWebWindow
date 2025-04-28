@@ -19,6 +19,7 @@ class QWebWindow(WebViewController, BindingController, WindowController):
         on_top   : bool = False,
         hide_when_close: bool = False,
         # params below are webview options
+        background_color: str | None = None,
         enable_clipboard    : bool = True,
         enable_javascript   : bool = True,
         enable_localstorage : bool = True,
@@ -31,6 +32,7 @@ class QWebWindow(WebViewController, BindingController, WindowController):
             minimum_size, maximum_size,
             resizable, on_top, hide_when_close)
         WebViewController.__init__(self,
+            background_color,
             enable_clipboard, enable_javascript, enable_localstorage,
             enable_webgl, force_darkmode, show_scrollbars, self._window)
         BindingController.__init__(self, self._window)

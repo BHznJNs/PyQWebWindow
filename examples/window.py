@@ -22,6 +22,11 @@ def set_title_test():
     window.start()
     return window
 
+def set_background_color_test():
+    window = QWebWindow(background_color="#333333")
+    window.start()
+    return window
+
 def show_when_ready_test():
     window = QWebWindow()
     window.start(show_when_ready=False)
@@ -34,5 +39,5 @@ def hide_when_close_test():
     return window
 
 app = QAppManager(debugging=True)
-window = hide_when_close_test()
+window = set_background_color_test()
 app.exec()
