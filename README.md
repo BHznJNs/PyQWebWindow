@@ -22,6 +22,10 @@ window.start()
 app.exec()
 ```
 
+## Documentation
+
+See [here](https://bhznjns.github.io/PyQWebWindow/) for full documentation.
+
 ## Useful Resources
 
 - System tray icon: [pystray](https://github.com/moses-palmer/pystray)

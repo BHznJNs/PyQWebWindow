@@ -1,8 +1,9 @@
 /** @type {import("basb-cli/types").SiteConfig} */
 export default {
-    homepage: "https://www.example.com/",
-    title: "Blog as Second Brain",
-    description: "Blog as Second Brain",
+    homepage: "https://bhznjns.github.io/PyQWebWindow/",
+    title: "PyQWebWindow Documentation",
+    description: "The documentation for the Python GUI library PyQWebWindow.",
+    footer: "::Powered by [BaSB](https://github.com/BHznJNs/BaSB)::",
     language: "en",
     pageSize: 20,
 
@@ -23,14 +24,6 @@ export default {
             "backToParent",
             "backToTop",
         ],
-    },
-    rss: {
-        enable: true,
-        size: 50,
-    },
-    newest: {
-        enable: true,
-        pageSize: 40,
     },
     search: {
         enable: true,
