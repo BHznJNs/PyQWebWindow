@@ -1,3 +1,4 @@
+import os
 from typing import Literal
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
@@ -35,8 +36,10 @@ class QAppManager:
 
         if disable_gpu:
             argv.add_key("disable-gpu")
+            os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = "--disable-gpu"
         if disable_gpu_compositing:
             argv.add_key("disable-gpu-compositing")
+            os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = "--disable-gpu-compositing"
 
         app = QAppManager._app_singleton = QApplication(argv.to_list())
         app.setQuitOnLastWindowClosed(auto_quit)
