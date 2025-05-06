@@ -38,9 +38,8 @@ class Backend(QObject):
             self._working_workers.remove(worker)
 
         task = self._task_dict[task_name]
-        worker = QWorker(task)
+        worker = QWorker(task, args)
         self._working_workers.add(worker)
-        worker.set_args(args)
         worker.finished.connect(after_worker_finished)
         worker.start()
 

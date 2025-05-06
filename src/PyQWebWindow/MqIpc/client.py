@@ -3,9 +3,9 @@ import zmq
 
 from PySide6.QtCore import QObject, QThread, Signal, Slot, SignalInstance
 from . import DEFAULT_IPC_PORT
-from ..EventEmitter import IpcAEventEmitter
-from ..Serializer import IpcSerializer
-from ...utils import Serializable
+from ..utils import Serializable
+from ..utils.EventEmitter import IpcAEventEmitter
+from ..utils.Serializer import IpcSerializer
 
 class IpcClient(IpcAEventEmitter):
     class _Worker(QThread):

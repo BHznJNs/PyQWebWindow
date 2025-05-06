@@ -1,5 +1,5 @@
 import pickle
-from ..utils.Serializable import Serializable
+from .Serializable import Serializable
 
 class IpcSerializer:
     """

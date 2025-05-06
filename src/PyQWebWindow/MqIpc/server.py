@@ -3,9 +3,9 @@ import threading
 import zmq
 
 from . import DEFAULT_IPC_PORT
-from ..EventEmitter import IpcAEventEmitter
-from ..Serializer import IpcSerializer
-from ...utils import Serializable
+from ..utils import Serializable
+from ..utils.EventEmitter import IpcAEventEmitter
+from ..utils.Serializer import IpcSerializer
 
 class IpcServer(IpcAEventEmitter):
     class _Worker(threading.Thread):

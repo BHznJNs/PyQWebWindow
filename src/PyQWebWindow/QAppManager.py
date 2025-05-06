@@ -1,8 +1,6 @@
 from typing import Literal
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
-from .ipc.QIpc.client import QIpcClient
-from .ipc.MqIpc.client import IpcClient
 
 DEFAULT_DEBUGGING_PORT = 9222
 
@@ -13,6 +11,8 @@ class QAppManager:
         debugging: bool = False,
         debugging_port: int = DEFAULT_DEBUGGING_PORT,
         remote_allow_origin: str = "*",
+        disable_gpu: bool = False,
+        disable_gpu_compositing: bool = False,
         theme: Literal["system", "dark", "light"] = "system",
         auto_quit: bool = True,
     ):
@@ -32,6 +32,11 @@ class QAppManager:
         if debugging:
             argv.set_key("remote-debugging-port", debugging_port)
             argv.set_key("remote-allow-origins", remote_allow_origin)
+
+        if disable_gpu:
+            argv.add_key("disable-gpu")
+        if disable_gpu_compositing:
+            argv.add_key("disable-gpu-compositing")
 
         app = QAppManager._app_singleton = QApplication(argv.to_list())
         app.setQuitOnLastWindowClosed(auto_quit)
@@ -55,11 +60,18 @@ class QAppManager:
         app.styleHints().setColorScheme(QAppManager._parse_theme(new_theme))
         app.setPalette(app.palette())
 
-    def use_ipc_client(self, client: IpcClient | QIpcClient):
+    """use_ipc_client
+    The type of client should be one of "IpcClient" and "QIpcClient".
+    The type was not directly noted in type hint in order to reduce non-intended module import.
+    """
+    def use_ipc_client(self, client):
         assert QAppManager._app_singleton is not None
-        if type(client) is QIpcClient:
+        if type(client).__name__ == "QIpcClient":
+            from .QIpc.client import QIpcClient
+            assert type(client) is QIpcClient
             client._use_parent(QAppManager._app_singleton)
             return
+        from .MqIpc.client import IpcClient
         assert type(client) is IpcClient
         client._setup_worker(QAppManager._app_singleton)
 

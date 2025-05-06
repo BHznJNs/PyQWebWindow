@@ -1,9 +1,9 @@
 from PySide6.QtCore import QObject
 from PySide6.QtNetwork import QLocalSocket
 
-from ..Serializer import IpcSerializer
-from ..EventEmitter import IpcEventEmitter
-from ...utils.Serializable import Serializable
+from ..utils import Serializable
+from ..utils.Serializer import IpcSerializer
+from ..utils.EventEmitter import IpcEventEmitter
 
 class QIpcClient(IpcEventEmitter):
     connect_timeout_ms = 300

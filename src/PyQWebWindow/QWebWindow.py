@@ -1,9 +1,6 @@
 from .controllers import WebViewController, BindingController, WindowController
 from .EventListener import EventListener
 from .QContextMenu import QContextMenu
-from .ipc.QIpc.server import QIpcServer
-from .ipc.QIpc.client import QIpcClient
-from .ipc.MqIpc.client import IpcClient
 from .utils import INITIAL_SCRIPT, LOADED_SCRIPT
 
 class QWebWindow(WebViewController, BindingController, WindowController):
@@ -68,13 +65,22 @@ class QWebWindow(WebViewController, BindingController, WindowController):
         webview.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         webview.customContextMenuRequested.connect(show_contextmenu)
 
-    def use_ipc_server(self, server: QIpcServer):
+    def use_ipc_server(self, server: "QIpcServer"): # type: ignore
+        from .QIpc.server import QIpcServer
+        assert type(server) is QIpcServer
         server._use_parent(self._window)
 
-    def use_ipc_client(self, client: IpcClient | QIpcClient):
-        if type(client) is QIpcClient:
+    """use_ipc_client
+    The type of client should be one of "IpcClient" and "QIpcClient".
+    The type was not directly noted in type hint in order to reduce non-intended module import.
+    """
+    def use_ipc_client(self, client):
+        if type(client).__name__ == "QIpcClient":
+            from .QIpc.client import QIpcClient
+            assert type(client) is QIpcClient
             client._use_parent(self._window)
             return
+        from .MqIpc.client import IpcClient
         assert type(client) is IpcClient
         client._setup_worker(self._window)
         self.event_listener\

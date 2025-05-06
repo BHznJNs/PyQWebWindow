@@ -4,12 +4,9 @@ from .utils.Serializable import Serializable, SerializableCallable
 class QWorker(QThread):
     finished = Signal(type(Serializable))
 
-    def __init__(self, task: SerializableCallable):
+    def __init__(self, task: SerializableCallable, args: list[Serializable]):
         super().__init__(None)
         self._task = task
-        self._args = None
-
-    def set_args(self, args: list[Serializable]):
         self._args = args
 
     def run(self):

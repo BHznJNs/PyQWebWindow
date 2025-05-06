@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass
 from threading import Lock
-from ..utils.Serializable import Serializable, SerializableCallable
+from .Serializable import Serializable, SerializableCallable
 
 @dataclass
 class IpcEvent:
