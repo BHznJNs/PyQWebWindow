@@ -1,0 +1,17 @@
+# Loading Content
+
+You can load content into the webview using the following methods of the `QWebWindow` instance:
+
+```python
+from PyQWebWindow.all import QWebWindow
+
+window = QWebWindow()
+
+# Load HTML string
+window.load_html("<h1>Hello from HTML string!</h1>")
+
+# Load an HTML file (path can be absolute or relative to the caller file)
+window.load_file("path/to/your/page.html")
+
+# Load a URL
+window.load_url("https://www.example.com")

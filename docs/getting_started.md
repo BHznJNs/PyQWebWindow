@@ -1,0 +1,33 @@
+# Getting Started
+
+PyQWebWindow is a Python library for building GUI applications using web technologies (HTML, CSS, JavaScript) rendered within a native window powered by PySide6 and Qt WebEngine.
+
+## Installation
+
+You can install PyQWebWindow using pip:
+
+```bash
+pip install PyQWebWindow
+```
+
+## Hello World
+
+Here is a simple example to create a window displaying "Hello World!":
+
+```python
+from PyQWebWindow.all import QWebWindow, QAppManager
+
+# Initialize the application manager
+app = QAppManager(debugging=True)
+
+# Create a web window
+window = QWebWindow()
+
+# Load HTML content
+window.set_html("<h1>Hello World!</h1>")
+
+# Start the window
+window.start()
+
+# Run the application event loop
+app.exec()

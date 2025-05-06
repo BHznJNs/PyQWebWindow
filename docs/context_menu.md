@@ -1,0 +1,44 @@
+# Context Menu
+
+You can customize the right-click context menu in the webview using the `QContextMenu` class.
+
+```python
+from PyQWebWindow.all import QWebWindow, QAppManager, QContextMenu
+
+def on_cut():
+    print("Cut action triggered!")
+
+def on_copy():
+    print("Copy action triggered!")
+
+def on_paste():
+    print("Paste action triggered!")
+
+app = QAppManager()
+window = QWebWindow()
+window.load_html("Right-click here!")
+
+# Create a context menu
+contextmenu = QContextMenu()
+
+# Add actions
+contextmenu.add_action("Cut", on_cut)
+contextmenu.add_actions([
+    ("Copy", on_copy),
+    ("Paste", on_paste),
+])
+
+# Add sections and separators
+contextmenu.add_section("Edit Actions")
+contextmenu.add_separator()
+
+# Add submenus
+submenu = QContextMenu()
+submenu.add_action("Sub Action 1", lambda: print("Sub Action 1 triggered!"))
+contextmenu.add_submenu(submenu)
+
+# Use the custom context menu
+window.use_context_menu(contextmenu)
+
+window.start()
+app.exec()

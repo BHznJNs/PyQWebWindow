@@ -1,0 +1,88 @@
+# Python Bindings and Workers
+
+PyQWebWindow allows you to call Python code from JavaScript. This can be done through **bindings** for functions that run on the main GUI thread, or **workers** for tasks that should run in a separate thread to avoid blocking the GUI.
+
+## Python Bindings
+
+You can expose Python functions to be called from JavaScript. These functions should accept JSON-serializable arguments and return JSON-serializable values.
+
+```python
+from PyQWebWindow.all import QWebWindow, QAppManager, SerializableCallable
+
+def python_hello():
+    return "Hello from Python!"
+
+def python_greet(name: str):
+    return f"Hello, {name} from Python!"
+
+app = QAppManager()
+window = QWebWindow()
+window.load_html("""
+    <html>
+    <body>
+        <button onclick="callPythonHello()">Call Python Hello</button>
+        <button onclick="callPythonGreet()">Call Python Greet</button>
+        <script>
+            async function callPythonHello() {
+                const result = await backend.python_hello();
+                alert(result);
+            }
+            async function callPythonGreet() {
+                const name = prompt("Enter your name:");
+                const result = await backend.python_greet(name);
+                alert(result);
+            }
+        </script>
+    </body>
+    </html>
+""")
+
+# Register the Python functions
+window.register_binding(python_hello)
+window.register_bindings([python_greet]) # Register multiple bindings
+
+window.start()
+app.exec()
+```
+
+In the JavaScript code, the registered Python functions are available under the `backend` object.
+
+## Python Workers
+
+For long-running Python tasks that should not block the GUI thread, you can register them as workers. These tasks run in a separate thread.
+
+```python
+from PyQWebWindow.all import QWebWindow, QAppManager, SerializableCallable
+from time import sleep
+
+def long_running_task(user_name: str) -> str:
+    """A task that simulates work."""
+    sleep(3)
+    return f"Hello {user_name} from worker!"
+
+app = QAppManager()
+window = QWebWindow()
+window.load_html("""
+    <html>
+    <body>
+        <button onclick="startWorker()">Start Worker</button>
+        <script>
+            async function startWorker() {
+                const name = prompt("Enter user name for the worker:");
+                // Call the task. The result will be returned asynchronously.
+                const result = await backend.long_running_task(name);
+                alert("Worker finished: " + result);
+            }
+        </script>
+    </body>
+    </html>
+""")
+
+# Register the Python task
+window.register_task(long_running_task)
+
+window.start()
+app.exec()
+```
+
+Similar to bindings, registered tasks are available under the `backend` object in JavaScript.
