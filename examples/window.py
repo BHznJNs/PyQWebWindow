@@ -27,6 +27,12 @@ def set_background_color_test():
     window.start()
     return window
 
+def disable_context_menu() -> QWebWindow:
+    window = QWebWindow(disable_contextmenu=True)
+    # Set the context menu policy to NoContextMenu
+    window.start()
+    return window
+
 def show_when_ready_test():
     window = QWebWindow()
     window.start(show_when_ready=False)

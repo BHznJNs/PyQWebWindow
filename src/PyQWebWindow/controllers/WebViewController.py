@@ -1,6 +1,6 @@
 import os
 
-from PySide6.QtCore import QUrl
+from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWebEngineCore import QWebEngineSettings, QWebEnginePage
@@ -41,6 +41,7 @@ class WebViewController:
         enable_javascript   : bool,
         enable_localstorage : bool,
         enable_webgl        : bool,
+        disable_contextmenu : bool,
         force_darkmode      : bool,
         show_scrollbars     : bool,
         parent              : QWidget,
@@ -51,6 +52,9 @@ class WebViewController:
 
         if background_color is not None:
             self.background_color = background_color
+        
+        if disable_contextmenu:
+            self._webview.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
         settings = self._webpage.settings()
         settings.setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent    , True)

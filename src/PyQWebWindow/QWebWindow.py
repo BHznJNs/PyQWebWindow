@@ -21,6 +21,7 @@ class QWebWindow(WebViewController, BindingController, WindowController):
         enable_javascript   : bool = True,
         enable_localstorage : bool = True,
         enable_webgl        : bool = True,
+        disable_contextmenu : bool = False,
         force_darkmode      : bool = False,
         show_scrollbars     : bool = True,
     ):
@@ -31,7 +32,7 @@ class QWebWindow(WebViewController, BindingController, WindowController):
         WebViewController.__init__(self,
             background_color,
             enable_clipboard, enable_javascript, enable_localstorage,
-            enable_webgl, force_darkmode, show_scrollbars, self._window)
+            enable_webgl, disable_contextmenu, force_darkmode, show_scrollbars, self._window)
         BindingController.__init__(self, self._window)
         self._window_fill_with_browser_widget(self._webview)
         self._init_event_listener()
