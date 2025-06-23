@@ -17,7 +17,7 @@ from PyQWebWindow.all import QWebWindow, QAppManager
 
 app = QAppManager(debugging=True)
 window = QWebWindow()
-window.set_html("<h1>Hello World!</h1>")
+window.load_html("<h1>Hello World!</h1>")
 window.start()
 app.exec()
 ```
