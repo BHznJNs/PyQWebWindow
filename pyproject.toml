@@ -1,8 +1,8 @@
 [project]
 name = "PyQWebWindow"
-version = "0.6.7"
+version = "0.6.8"
 authors = [
-  { name="BHznJNs", email="441768875@qq.com" },
+  { name="BHznJNs", email="bhznjns@qq.com" },
 ]
 description = "Another way to build Python webview GUI applications."
 readme = "README.md"
@@ -14,7 +14,7 @@ classifiers = [
 license = "Apache-2.0"
 license-files = ["LICEN[CS]E*"]
 dependencies = [
-  "PySide6==6.9.0",
+  "PySide6==6.9.1",
   "pyzmq==26.4.0",
 ]
 
